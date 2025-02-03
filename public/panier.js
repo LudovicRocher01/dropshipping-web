@@ -20,7 +20,6 @@ function afficherPanier() {
         produitDiv.innerHTML = `
             <img src="${produit.image}" width="50">
             <h2>${produit.nom}</h2>
-            <p>${produit.description}</p>
             <p><strong>Prix: </strong>${produit.prix}€</p>
             <div class="quantite">
                 <button onclick="modifierQuantite(${produit.id}, -1)">➖</button>
