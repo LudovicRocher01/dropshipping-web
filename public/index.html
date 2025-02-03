@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dropshipping Site</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">🚀 Osteozen</a>
+            <button class="cart-btn" onclick="window.location.href='panier.html'">
+                <i class="fas fa-shopping-cart"></i> Panier <span class="cart-count">0</span>
+            </button>
+        </div>
+    </nav>
+    
+    <header class="hero">
+        <h1>Bienvenue sur ma boutique en ligne</h1>
+    </header>
+
+    <main>
+        <div class="tile-container">
+            <a href="products/health_products.html" class="tile health">
+                <img src="images/health_product.png" alt="Produits de santé">
+                <span class="tile-text">Produits de Santé</span>
+            </a>
+            <a href="products/books.html" class="tile books">
+                <img src="images/book.png" alt="Livres">
+                <span class="tile-text">Mes Livres</span>
+            </a>
+            <a href="products/sprays.html" class="tile sprays">
+                <img src="images/oil_spray.png" alt="Sprays d'huiles essentielles">
+                <span class="tile-text">Sprays d'Huile Essentielles</span>
+            </a>
+        </div>
+    </main>
+</body>
+</html>
+
+<script>
+    // Mettre à jour le badge du panier sur toutes les pages
+function mettreAJourBadgePanier() {
+    let panier = JSON.parse(localStorage.getItem("panier")) || [];
+    document.querySelectorAll(".cart-count").forEach(span => {
+        span.textContent = panier.reduce((total, prod) => total + prod.quantite, 0);
+    });
+}
+
+// Mettre à jour le badge du panier dès le chargement de la page
+document.addEventListener("DOMContentLoaded", mettreAJourBadgePanier);
+
+</script>

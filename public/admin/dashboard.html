@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="dashboard_style.css">
+</head>
+<body>
+    <div class="admin-container">
+        <h2>Panneau d'administration</h2>
+        <button id="logout">Déconnexion</button>
+
+        <h3>Liste des Produits</h3>
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Image</th>
+            <th>Nom</th>
+            <th>Description</th>
+            <th>Prix</th>
+            <th>Lien d'achat</th>
+            <th>Catégorie</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody id="produits-table">
+        <!-- Les produits seront insérés ici via JS -->
+    </tbody>
+</table>
+
+
+        <h3>Ajouter un Produit</h3>
+        <form id="add-product-form" enctype="multipart/form-data">
+            <input type="text" id="nom" placeholder="Nom du produit" required>
+            <input type="text" id="description" placeholder="Description">
+            <input type="number" id="prix" placeholder="Prix" required>
+            <input type="text" id="lien_achat" placeholder="Lien d'achat">
+            <input type="file" id="image" accept="image/*" required>
+            <select id="categorie" required>
+                <option value="sante">Santé</option>
+                <option value="livre">Livre</option>
+                <option value="spray">Spray</option>
+            </select>
+            <button type="submit">Ajouter Produit</button>
+        </form>
+        
+    </div>
+
+    <script src="dashboard.js"></script>
+</body>
+</html>
