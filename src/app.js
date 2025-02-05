@@ -14,9 +14,9 @@ app.use(express.static(path.join(__dirname, '../public')));
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
 app.use(express.json()); // Permet de lire les données JSON envoyées par le front-end
-app.use('/api/produits', require('./routes/produits')); // Charge le fichier des routes
-
+app.use('/api/produits', require('./routes/produits'));
 app.use('/api/auth', require('./routes/auth'));
+app.use('/api/order', require('./routes/order'));
 
 // Lancer le serveur
 app.listen(PORT, () => {

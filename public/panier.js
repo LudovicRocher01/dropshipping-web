@@ -1,7 +1,27 @@
-// Fonction pour afficher les produits du panier
+// ---------------------------
+// Fonctions utilitaires
+// ---------------------------
+
+// Récupérer le panier depuis localStorage
+function getPanier() {
+    return JSON.parse(localStorage.getItem("panier")) || [];
+}
+
+// Mettre à jour le badge du panier sur toutes les pages
+function mettreAJourBadgePanier() {
+    let panier = getPanier();
+    document.querySelectorAll(".cart-count").forEach(span => {
+        span.textContent = panier.reduce((total, prod) => total + prod.quantite, 0);
+    });
+}
+
+// ---------------------------
+// Affichage du panier
+// ---------------------------
+
 function afficherPanier() {
-    let panier = JSON.parse(localStorage.getItem("panier")) || [];
-    let container = document.getElementById("panier-container");
+    let panier = getPanier();
+    let container = document.querySelector(".cart-item-box");
 
     // Vider le contenu actuel
     container.innerHTML = "";
@@ -11,36 +31,66 @@ function afficherPanier() {
         return;
     }
 
-    let total = 0;
+    let subtotal = 0;
     panier.forEach(produit => {
-        total += produit.prix * produit.quantite;
+        // Convertir le prix en nombre
+        produit.prix = parseFloat(produit.prix);
+        if (isNaN(produit.prix)) {
+            console.error(`Erreur : le prix du produit ${produit.nom} est invalide.`);
+            produit.prix = 0;
+        }
+        subtotal += produit.prix * produit.quantite;
 
         let produitDiv = document.createElement("div");
-        produitDiv.classList.add("panier-item");
+        produitDiv.classList.add("product-card");
         produitDiv.innerHTML = `
-            <img src="${produit.image}" width="50">
-            <h2>${produit.nom}</h2>
-            <p><strong>Prix: </strong>${produit.prix}€</p>
-            <div class="quantite">
-                <button onclick="modifierQuantite(${produit.id}, -1)">➖</button>
-                <span>${produit.quantite}</span>
-                <button onclick="modifierQuantite(${produit.id}, 1)">➕</button>
+            <div class="card">
+                <div class="img-box">
+                    <img src="${produit.image}" alt="${produit.nom}" width="80px" class="product-img">
+                </div>
+                <div class="detail">
+                    <h4 class="product-name">${produit.nom}</h4>
+                    <div class="wrapper-cart">
+                        <div class="product-qty">
+                            <button onclick="modifierQuantite(${produit.id}, -1)">
+                                <ion-icon name="remove-outline"></ion-icon>
+                            </button>
+                            <span>${produit.quantite}</span>
+                            <button onclick="modifierQuantite(${produit.id}, 1)">
+                                <ion-icon name="add-outline"></ion-icon>
+                            </button>
+                        </div>
+                        <div class="price">
+                            <span>${(produit.prix * produit.quantite).toFixed(2)} €</span>
+                        </div>
+                    </div>
+                </div>
+                <button class="product-close-btn" onclick="supprimerProduit(${produit.id})">
+                    <ion-icon name="close-outline"></ion-icon>
+                </button>
             </div>
-            <button class="remove-btn" onclick="supprimerProduit(${produit.id})">❌ Supprimer</button>
         `;
         container.appendChild(produitDiv);
     });
 
-    let totalDiv = document.createElement("div");
-    totalDiv.classList.add("total");
-    totalDiv.innerHTML = `<h3>Total: ${total.toFixed(2)}€</h3>`;
-    container.appendChild(totalDiv);
+    let shipping = 5;
+    let total = subtotal + shipping;
+
+    document.getElementById("subtotal").textContent = subtotal.toFixed(2);
+    document.getElementById("shipping").textContent = shipping.toFixed(2);
+    document.getElementById("total").textContent = total.toFixed(2);
+    // Si un élément payAmount existe, on le met à jour aussi
+    if(document.getElementById("payAmount")){
+        document.getElementById("payAmount").textContent = total.toFixed(2);
+    }
 }
 
-// Modifier la quantité d'un produit
-function modifierQuantite(id, changement) {
-    let panier = JSON.parse(localStorage.getItem("panier")) || [];
+// ---------------------------
+// Gestion du panier (quantité et suppression)
+// ---------------------------
 
+function modifierQuantite(id, changement) {
+    let panier = getPanier();
     let produit = panier.find(prod => prod.id == id);
     if (produit) {
         produit.quantite += changement;
@@ -48,32 +98,76 @@ function modifierQuantite(id, changement) {
             panier = panier.filter(prod => prod.id != id);
         }
     }
-
     localStorage.setItem("panier", JSON.stringify(panier));
     afficherPanier();
     mettreAJourBadgePanier();
 }
 
-// Supprimer un produit du panier
 function supprimerProduit(id) {
-    let panier = JSON.parse(localStorage.getItem("panier")) || [];
+    let panier = getPanier();
     panier = panier.filter(prod => prod.id != id);
-
     localStorage.setItem("panier", JSON.stringify(panier));
     afficherPanier();
     mettreAJourBadgePanier();
 }
 
-// Charger le panier au démarrage
-afficherPanier();
-
-// Mettre à jour le badge du panier sur toutes les pages
-function mettreAJourBadgePanier() {
-    let panier = JSON.parse(localStorage.getItem("panier")) || [];
-    document.querySelectorAll(".cart-count").forEach(span => {
-        span.textContent = panier.reduce((total, prod) => total + prod.quantite, 0);
-    });
+// ---------------------------
+// Récupérer le total sécurisé depuis le serveur
+// ---------------------------
+async function getTotalFromServer(panier) {
+    try {
+        const response = await fetch('/api/order/total', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ panier: panier })
+        });
+        const data = await response.json();
+        console.log("Réponse serveur pour le total :", data);  // Pour vérifier dans la console
+        return parseFloat(data.total);
+    } catch (error) {
+        console.error("Erreur lors de la récupération du total sécurisé:", error);
+        return 0;
+    }
 }
 
-// Mettre à jour le badge du panier dès le chargement de la page
-document.addEventListener("DOMContentLoaded", mettreAJourBadgePanier);
+// ---------------------------
+// Lancer le paiement avec PayPal
+// ---------------------------
+async function lancerPaiement() {
+    const panier = getPanier();
+    const secureTotal = await getTotalFromServer(panier);
+    // Si secureTotal est 0 ou non défini, utiliser une valeur par défaut (pour le test)
+    let totalAmount = (secureTotal && secureTotal > 0) ? secureTotal : 50.00;
+    
+    paypal.Buttons({
+        createOrder: function(data, actions) {
+            return actions.order.create({
+                purchase_units: [{
+                    amount: {
+                        value: totalAmount.toFixed(2)
+                    }
+                }]
+            });
+        },
+        onApprove: function(data, actions) {
+            return actions.order.capture().then(function(details) {
+                alert('Transaction réussie par ' + details.payer.name.given_name);
+                // Ici, vous pouvez aussi envoyer les détails de la commande à votre serveur pour stocker la commande
+                window.open("recap-commande.html", "_blank");
+            });
+        },
+        onError: function(err) {
+            console.error('Erreur lors du paiement:', err);
+            alert('Une erreur est survenue lors du paiement.');
+        }
+    }).render('#paypal-button-container');
+}
+
+// ---------------------------
+// Initialisation au chargement du DOM
+// ---------------------------
+document.addEventListener("DOMContentLoaded", () => {
+    afficherPanier();
+    mettreAJourBadgePanier();
+    lancerPaiement();
+});
