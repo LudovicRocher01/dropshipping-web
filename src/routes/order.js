@@ -1,7 +1,7 @@
 // routes/order.js
 const express = require('express');
 const router = express.Router();
-const db = require('../models/db'); // Assure-toi que ce chemin est correct
+const db = require('../models/db'); // Assurez-vous que ce chemin est correct
 
 // Endpoint pour recalculer le total du panier
 router.post('/total', (req, res) => {
@@ -28,9 +28,22 @@ router.post('/total', (req, res) => {
   
   Promise.all(queries)
     .then(() => {
-      const shippingFee = 5;
-      total += shippingFee;
-      res.json({ total: total.toFixed(2) });
+      // Récupérer les frais de port depuis la table settings
+      db.query('SELECT setting_value FROM settings WHERE setting_key = ?', ['shipping_fee'], (err, results) => {
+        if (err) {
+          console.error(err);
+          return res.status(500).json({ error: 'Erreur lors du calcul des frais de port' });
+        }
+        let shippingFee = 5; // Valeur par défaut
+        if (results.length > 0) {
+          shippingFee = parseFloat(results[0].setting_value);
+          if (isNaN(shippingFee)) {
+            shippingFee = 5;
+          }
+        }
+        total += shippingFee;
+        res.json({ total: total.toFixed(2) });
+      });
     })
     .catch(err => {
       console.error(err);

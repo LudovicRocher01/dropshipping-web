@@ -19,6 +19,8 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/order', require('./routes/order'));
 app.use('/api/commande', require('./routes/commande'));
 app.use('/api/commandes', require('./routes/commandes'));
+app.use('/api/settings', require('./routes/settings'));
+
 
 
 // Lancer le serveur

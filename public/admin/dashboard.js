@@ -245,3 +245,42 @@ async function supprimerCommande(id) {
         alert("Une erreur est survenue lors de la suppression de la commande.");
     }
 }
+
+// Fonction pour récupérer les frais de port depuis le serveur et les afficher dans le champ
+async function chargerShippingFee() {
+    try {
+      const response = await fetch('/api/settings/shipping_fee');
+      const data = await response.json();
+      if (data.setting) {
+        document.getElementById("shipping_fee").value = parseFloat(data.setting);
+      }
+    } catch (error) {
+      console.error("Erreur lors du chargement des frais de port :", error);
+    }
+  }
+  
+  // Fonction pour mettre à jour les frais de port sur le serveur
+  document.getElementById("update-shipping").addEventListener("click", async () => {
+    const newFee = document.getElementById("shipping_fee").value;
+    try {
+      const response = await fetch('/api/settings/shipping_fee', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ setting_value: newFee })
+      });
+      const data = await response.json();
+      if (data.message) {
+        alert("Frais de port mis à jour avec succès !");
+        // Vous pouvez actualiser l'affichage du panier si nécessaire
+      }
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour des frais de port :", error);
+      alert("Erreur lors de la mise à jour.");
+    }
+  });
+  
+  // Charger les frais de port au chargement du DOM
+  document.addEventListener("DOMContentLoaded", () => {
+    chargerShippingFee();
+  });
+  

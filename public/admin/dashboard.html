@@ -10,7 +10,13 @@
     <div class="admin-container">
         <h2>Panneau d'administration</h2>
         <button id="logout">Déconnexion</button>
-
+        <div class="settings-section">
+            <h3>Paramètres</h3>
+            <label for="shipping_fee">Frais de port (€):</label>
+            <input type="number" id="shipping_fee" min="0" step="0.01">
+            <button id="update-shipping">Mettre à jour</button>
+          </div>
+          
         <h3>Liste des Produits</h3>
 <table>
     <thead>
@@ -67,6 +73,7 @@
             <!-- Commandes affichées ici -->
         </tbody>
     </table>
+    
 </div>
 
 

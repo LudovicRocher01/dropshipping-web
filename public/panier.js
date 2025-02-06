@@ -18,7 +18,7 @@ function mettreAJourBadgePanier() {
 // ---------------------------
 // Affichage du panier
 // ---------------------------
-function afficherPanier() {
+async function afficherPanier() {
     let panier = getPanier();
     let container = document.querySelector(".cart-item-box");
 
@@ -32,14 +32,12 @@ function afficherPanier() {
 
     let subtotal = 0;
     panier.forEach(produit => {
-        // Convertir le prix en nombre
         produit.prix = parseFloat(produit.prix);
         if (isNaN(produit.prix)) {
             console.error(`Erreur : le prix du produit ${produit.nom} est invalide.`);
             produit.prix = 0;
         }
         subtotal += produit.prix * produit.quantite;
-
         let produitDiv = document.createElement("div");
         produitDiv.classList.add("product-card");
         produitDiv.innerHTML = `
@@ -72,7 +70,7 @@ function afficherPanier() {
         container.appendChild(produitDiv);
     });
 
-    let shipping = 5; // Frais de livraison fixes
+    const shipping = await getShippingFee();
     let total = subtotal + shipping;
 
     document.getElementById("subtotal").textContent = subtotal.toFixed(2);
@@ -82,6 +80,7 @@ function afficherPanier() {
         document.getElementById("payAmount").textContent = total.toFixed(2);
     }
 }
+
 
 // ---------------------------
 // Gestion du panier (quantité et suppression)
@@ -113,13 +112,13 @@ function supprimerProduit(id) {
 // ---------------------------
 async function getTotalFromServer(panier) {
     try {
+        console.log('yo')
         const response = await fetch('/api/order/total', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ panier: panier })
         });
         const data = await response.json();
-        console.log("Réponse serveur pour le total :", data);  // Pour vérifier dans la console
         return parseFloat(data.total);
     } catch (error) {
         console.error("Erreur lors de la récupération du total sécurisé:", error);
@@ -131,25 +130,36 @@ async function getTotalFromServer(panier) {
 // Lancer le paiement avec PayPal et enregistrer la commande
 // ---------------------------
 async function lancerPaiement() {
-    const panier = getPanier();
-    const secureTotal = await getTotalFromServer(panier);
-    let totalAmount = (secureTotal && secureTotal > 0) ? secureTotal : 50.00;
-    
+    // Déclarer une variable globale à la fonction pour stocker le total
+    let totalAmountGlobal = 0;
+
     paypal.Buttons({
-        createOrder: function(data, actions) {
+        createOrder: async function(data, actions) {
+            // Récupérer le panier actuel au moment du clic
+            const panier = getPanier();
+            // Appeler l'endpoint pour obtenir le total sécurisé (à jour)
+            const secureTotal = await getTotalFromServer(panier);
+            // Définir totalAmountGlobal dans cette portée
+            totalAmountGlobal = (secureTotal && secureTotal > 0) ? secureTotal : 50.00;
+            
             return actions.order.create({
                 purchase_units: [{
                     amount: {
-                        value: totalAmount.toFixed(2)
+                        value: totalAmountGlobal.toFixed(2)
                     }
                 }]
             });
         },
+
         onApprove: function(data, actions) {
             return actions.order.capture().then(function(details) {
-                alert('Transaction réussie par ' + details.payer.name.given_name);
-                
-                // Préparer les données de la commande à envoyer au serveur
+                // Afficher un message dans la pop-up PayPal
+                document.querySelector('#paypal-button-container').innerHTML = `
+                    <h3>Merci ${details.payer.name.given_name}, votre transaction est réussie !</h3>
+                    <p>Vous serez redirigé dans quelques secondes...</p>
+                `;
+        
+                // Préparer la commande à enregistrer
                 const panier = getPanier();
                 const orderData = {
                     client: {
@@ -157,16 +167,16 @@ async function lancerPaiement() {
                         nom: details.payer.name.surname,
                         email: details.payer.email_address,
                         adresse: details.purchase_units[0].shipping && details.purchase_units[0].shipping.address 
-                                 ? `${details.purchase_units[0].shipping.address.address_line_1 || ''} ${details.purchase_units[0].shipping.address.admin_area_2 || ''} ${details.purchase_units[0].shipping.address.postal_code || ''}`.trim()
-                                 : '',
-                        telephone: '' // PayPal ne fournit pas toujours le numéro de téléphone
+                            ? `${details.purchase_units[0].shipping.address.address_line_1 || ''} ${details.purchase_units[0].shipping.address.admin_area_2 || ''} ${details.purchase_units[0].shipping.address.postal_code || ''}`.trim()
+                            : '',
+                        telephone: ''
                     },
-                    produits: panier,  // Stocke la liste des produits commandés
-                    total: totalAmount.toFixed(2),
+                    produits: panier,
+                    total: totalAmountGlobal.toFixed(2),  // Utilisation de la bonne variable ici
                     transactionId: details.id
                 };
         
-                // Envoyer la commande au serveur
+                // Enregistrer la commande sur le serveur
                 fetch('/api/commande/submit', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -174,16 +184,18 @@ async function lancerPaiement() {
                 })
                 .then(response => response.json())
                 .then(data => {
-                    console.log("Commande enregistrée :", data);
-                    // Stocker les informations pour le récapitulatif dans sessionStorage
                     sessionStorage.setItem("orderClient", JSON.stringify(orderData.client));
                     sessionStorage.setItem("orderProduits", JSON.stringify(orderData.produits));
                     sessionStorage.setItem("orderTotal", orderData.total);
-                    sessionStorage.setItem("orderId", data.orderId); // si votre endpoint renvoie un orderId
+                    sessionStorage.setItem("orderId", data.orderId);
+        
                     // Vider le panier après confirmation
                     localStorage.removeItem("panier");
-                    // Rediriger vers la page de récapitulatif dans une nouvelle fenêtre
-                    window.open("recap-commande.html", "_blank");
+        
+                    // Redirection après 3 secondes
+                    setTimeout(() => {
+                        window.location.href = "recap/recap-commande.html";
+                    }, 3000);
                 })
                 .catch(err => {
                     console.error("Erreur lors de l'enregistrement de la commande :", err);
@@ -197,6 +209,19 @@ async function lancerPaiement() {
         }
     }).render('#paypal-button-container');
 }
+
+
+async function getShippingFee() {
+    try {
+        const response = await fetch('/api/settings/shipping_fee');
+        const data = await response.json();
+        return parseFloat(data.setting) || 0;
+    } catch (error) {
+        console.error("Erreur lors de la récupération des frais de port :", error);
+        return 0;
+    }
+}
+
 
 // ---------------------------
 // Initialisation au chargement du DOM
