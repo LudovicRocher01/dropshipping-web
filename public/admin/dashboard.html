@@ -46,6 +46,30 @@
             <button type="submit">Ajouter Produit</button>
         </form>
         
+        <button id="show-orders">Voir les Commandes</button>
+
+<div id="commandes-section" style="display: none;">
+    <h3>Liste des Commandes</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Client</th>
+                <th>Email</th>
+                <th>Adresse</th>
+                <th>Date de commande</th>
+                <th>Détails de la commande</th>
+                <th>Total (€)</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="commandes-table">
+            <!-- Commandes affichées ici -->
+        </tbody>
+    </table>
+</div>
+
+
     </div>
 
     <script src="dashboard.js"></script>

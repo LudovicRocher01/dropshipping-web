@@ -172,3 +172,76 @@ document.getElementById("add-product-form").addEventListener("submit", async fun
 
 // Charger les produits au chargement de la page
 chargerProduits();
+
+// Afficher/Masquer la section des commandes
+document.getElementById("show-orders").addEventListener("click", function () {
+    const section = document.getElementById("commandes-section");
+    section.style.display = section.style.display === "none" ? "block" : "none";
+    if (section.style.display === "block") {
+        chargerCommandes();
+    }
+});
+
+// Fonction pour récupérer et afficher les commandes
+async function chargerCommandes() {
+    try {
+        const response = await fetch("/api/commandes");
+        const commandes = await response.json();
+
+        const commandesTable = document.getElementById("commandes-table");
+        commandesTable.innerHTML = ""; // Nettoyer le tableau
+
+        commandes.forEach(commande => {
+            const row = document.createElement("tr");
+
+            // Si order_details est stocké en tant que chaîne JSON, on le parse
+            let produits;
+            try {
+                produits = JSON.parse(commande.order_details);
+            } catch (parseError) {
+                console.error("Erreur de parsing pour order_details :", parseError);
+                produits = [];
+            }
+            let produitsHTML = "<ul>";
+            produits.forEach(produit => {
+                produitsHTML += `<li>${produit.nom} (x${produit.quantite}) - ${parseFloat(produit.prix).toFixed(2)} €</li>`;
+            });
+            produitsHTML += "</ul>";
+
+            // Formater la date (par exemple, en local)
+            const dateCommande = new Date(commande.created_at).toLocaleString();
+
+            row.innerHTML = `
+                <td>${commande.id}</td>
+                <td>${commande.prenom} ${commande.nom}</td>
+                <td>${commande.email}</td>
+                <td>${commande.adresse}</td>
+                <td>${dateCommande}</td>
+                <td>${produitsHTML}</td>
+                <td>${parseFloat(commande.total).toFixed(2)} €</td>
+                <td><button onclick="supprimerCommande(${commande.id})" class="delete-btn">Archiver</button></td>
+            `;
+            commandesTable.appendChild(row);
+        });
+    } catch (error) {
+        console.error("Erreur lors du chargement des commandes :", error);
+    }
+}
+
+
+async function supprimerCommande(id) {
+    if (!confirm("Êtes-vous sûr de vouloir archiver cette commande ?")) {
+        return;
+    }
+    try {
+        const response = await fetch(`/api/commandes/${id}`, {
+            method: "DELETE"
+        });
+        const data = await response.json();
+        alert(data.message);
+        chargerCommandes(); // Rafraîchir la liste des commandes
+    } catch (error) {
+        console.error("Erreur lors de la suppression de la commande :", error);
+        alert("Une erreur est survenue lors de la suppression de la commande.");
+    }
+}

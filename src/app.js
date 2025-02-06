@@ -17,6 +17,9 @@ app.use(express.json()); // Permet de lire les données JSON envoyées par le fr
 app.use('/api/produits', require('./routes/produits'));
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/order', require('./routes/order'));
+app.use('/api/commande', require('./routes/commande'));
+app.use('/api/commandes', require('./routes/commandes'));
+
 
 // Lancer le serveur
 app.listen(PORT, () => {

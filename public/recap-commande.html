@@ -13,9 +13,42 @@
     </div>
   </nav>
   <main class="container">
-    <h1>Merci pour votre commande !</h1>
-    <p>Votre commande a été enregistrée et sera traitée sous peu.</p>
-    <!-- Ajoute ici d'autres informations si besoin -->
+    <h1 id="remerciement">Merci pour votre commande !</h1>
+    <div id="recap">
+      <!-- Le récapitulatif de la commande s'affichera ici -->
+    </div>
   </main>
+  <script>
+    // Récupérer les informations du client et de la commande depuis sessionStorage
+    const clientData = JSON.parse(sessionStorage.getItem("orderClient"));
+    const produits = JSON.parse(sessionStorage.getItem("orderProduits"));
+    const total = sessionStorage.getItem("orderTotal");
+    
+    // Mettre à jour le message de remerciement avec le prénom et le nom
+    if (clientData) {
+      const remerciement = document.getElementById("remerciement");
+      remerciement.textContent = `Merci ${clientData.prenom} ${clientData.nom} pour votre commande !`;
+    }
+    
+    // Afficher le récapitulatif de la commande
+    const recapDiv = document.getElementById("recap");
+    if (produits && produits.length > 0) {
+      let html = `<h2>Détail de la commande :</h2>`;
+      html += `<ul>`;
+      produits.forEach(produit => {
+        html += `<li>
+                  <img src="${produit.image}" alt="${produit.nom}" width="50">
+                  <strong>${produit.nom}</strong> – Quantité : ${produit.quantite} – Prix unitaire : ${parseFloat(produit.prix).toFixed(2)} €
+                 </li>`;
+      });
+      html += `<br> <h3> Votre commande sera livré à l'adresse suivante : ${clientData.adresse}`
+      html += `</ul> <br>`;
+      html += `<h3>Total payé : ${parseFloat(total).toFixed(2)} €</h3>`;
+      html += `<br> <h3> Un email de confirmation vous a été envoyé à l'adresse suivante : ${clientData.email}`
+      recapDiv.innerHTML = html;
+    } else {
+      recapDiv.innerHTML = "<p>Aucune donnée de commande trouvée.</p>";
+    }
+  </script>
 </body>
 </html>
