@@ -2,6 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../models/db'); // Assurez-vous que le chemin est correct
+const { envoyerConfirmationCommande } = require('./mailer');  // Importer la fonction d'envoi
 
 // Endpoint pour enregistrer une commande
 router.post('/submit', (req, res) => {
@@ -37,7 +38,17 @@ router.post('/submit', (req, res) => {
       console.error("Erreur lors de l'enregistrement de la commande:", err);
       return res.status(500).json({ error: 'Erreur serveur lors de l\'enregistrement de la commande' });
     }
-    res.json({ message: 'Commande enregistrée avec succès', orderId: result.insertId });
+
+    // Envoi de l'email de confirmation après enregistrement de la commande
+    envoyerConfirmationCommande(client, produits, total)
+      .then(() => {
+        console.log('Email de confirmation envoyé à', client.email);
+        res.json({ message: 'Commande enregistrée avec succès et email envoyé', orderId: result.insertId });
+      })
+      .catch(emailErr => {
+        console.error('Erreur lors de l’envoi de l’email :', emailErr);
+        res.status(500).json({ error: 'Commande enregistrée mais échec de l’envoi de l’email' });
+      });
   });
 });
 
