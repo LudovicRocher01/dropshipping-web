@@ -27,10 +27,15 @@
     const total = sessionStorage.getItem("orderTotal");
 
     // Mettre à jour le message de remerciement avec le prénom et le nom
-    if (clientData) {
-      const remerciement = document.getElementById("remerciement");
-      remerciement.textContent = `Merci ${clientData.prenom} ${clientData.nom} pour votre commande !`;
-    }
+
+  if (clientData) {
+      document.getElementById("remerciement").textContent = `Merci ${clientData.prenom} ${clientData.nom} pour votre commande !`;
+      const recapDiv = document.getElementById("recap");
+    
+      recapDiv.innerHTML += `<p>Email : ${clientData.email}</p>`;
+      recapDiv.innerHTML += `<p>Adresse : ${clientData.adresse === "Retrait au cabinet" ? "Retrait au cabinet" : clientData.adresse}</p>`;
+  }
+
 
     // Afficher le récapitulatif de la commande
     const recapDiv = document.getElementById("recap");

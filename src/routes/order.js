@@ -5,13 +5,12 @@ const db = require('../models/db'); // Assurez-vous que ce chemin est correct
 
 // Endpoint pour recalculer le total du panier
 router.post('/total', (req, res) => {
-  // Le client envoie un tableau de { id, quantite }
-  const panier = req.body.panier;
-  
+  const { panier, retraitMagasin } = req.body;  // On récupère l'option de retrait
+
   if (!panier || !Array.isArray(panier)) {
     return res.status(400).json({ error: 'Données du panier invalides' });
   }
-  
+
   let total = 0;
   let queries = panier.map(item => {
     return new Promise((resolve, reject) => {
@@ -25,25 +24,32 @@ router.post('/total', (req, res) => {
       });
     });
   });
-  
+
   Promise.all(queries)
     .then(() => {
-      // Récupérer les frais de port depuis la table settings
-      db.query('SELECT setting_value FROM settings WHERE setting_key = ?', ['shipping_fee'], (err, results) => {
-        if (err) {
-          console.error(err);
-          return res.status(500).json({ error: 'Erreur lors du calcul des frais de port' });
-        }
-        let shippingFee = 5; // Valeur par défaut
-        if (results.length > 0) {
-          shippingFee = parseFloat(results[0].setting_value);
-          if (isNaN(shippingFee)) {
-            shippingFee = 5;
-          }
-        }
-        total += shippingFee;
+      if (retraitMagasin) {
+        // Si l'utilisateur choisit le retrait, pas de frais de port
         res.json({ total: total.toFixed(2) });
-      });
+      } else {
+        // Sinon, on ajoute les frais de port
+        db.query('SELECT setting_value FROM settings WHERE setting_key = ?', ['shipping_fee'], (err, results) => {
+          if (err) {
+            console.error(err);
+            return res.status(500).json({ error: 'Erreur lors du calcul des frais de port' });
+          }
+
+          let shippingFee = 5; // Valeur par défaut
+          if (results.length > 0) {
+            shippingFee = parseFloat(results[0].setting_value);
+            if (isNaN(shippingFee)) {
+              shippingFee = 5;
+            }
+          }
+
+          total += shippingFee;
+          res.json({ total: total.toFixed(2) });
+        });
+      }
     })
     .catch(err => {
       console.error(err);

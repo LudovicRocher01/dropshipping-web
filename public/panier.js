@@ -22,9 +22,7 @@ async function afficherPanier() {
     let panier = getPanier();
     let container = document.querySelector(".cart-item-box");
 
-    // Vider le contenu actuel
     container.innerHTML = "";
-
     if (panier.length === 0) {
         container.innerHTML = "<p>Votre panier est vide.</p>";
         return;
@@ -34,10 +32,10 @@ async function afficherPanier() {
     panier.forEach(produit => {
         produit.prix = parseFloat(produit.prix);
         if (isNaN(produit.prix)) {
-            console.error(`Erreur : le prix du produit ${produit.nom} est invalide.`);
             produit.prix = 0;
         }
         subtotal += produit.prix * produit.quantite;
+
         let produitDiv = document.createElement("div");
         produitDiv.classList.add("product-card");
         produitDiv.innerHTML = `
@@ -70,16 +68,22 @@ async function afficherPanier() {
         container.appendChild(produitDiv);
     });
 
-    const shipping = await getShippingFee();
+    const retraitMagasin = document.getElementById("retraitMagasin").checked;
+    const shipping = retraitMagasin ? 0 : await getShippingFee();
     let total = subtotal + shipping;
 
     document.getElementById("subtotal").textContent = subtotal.toFixed(2);
     document.getElementById("shipping").textContent = shipping.toFixed(2);
     document.getElementById("total").textContent = total.toFixed(2);
+
     if (document.getElementById("payAmount")) {
         document.getElementById("payAmount").textContent = total.toFixed(2);
     }
 }
+
+// Mettre à jour le panier lorsqu'on coche/décoche "Retrait au cabinet"
+document.getElementById("retraitMagasin").addEventListener("change", afficherPanier);
+
 
 
 // ---------------------------
@@ -112,12 +116,14 @@ function supprimerProduit(id) {
 // ---------------------------
 async function getTotalFromServer(panier) {
     try {
-        console.log('yo')
+        const retraitMagasin = document.getElementById("retraitMagasin").checked;
+
         const response = await fetch('/api/order/total', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ panier: panier })
+            body: JSON.stringify({ panier: panier, retraitMagasin: retraitMagasin })  // On envoie l'info au serveur
         });
+
         const data = await response.json();
         return parseFloat(data.total);
     } catch (error) {
@@ -125,6 +131,7 @@ async function getTotalFromServer(panier) {
         return 0;
     }
 }
+
 
 // ---------------------------
 // Lancer le paiement avec PayPal et enregistrer la commande
@@ -153,7 +160,7 @@ async function lancerPaiement() {
 
         onApprove: function(data, actions) {
             return actions.order.capture().then(function(details) {
-                // Afficher un message dans la pop-up PayPal
+                // Afficher un message de confirmation dans la pop-up PayPal
                 document.querySelector('#paypal-button-container').innerHTML = `
                     <h3>Merci ${details.payer.name.given_name}, votre transaction est réussie !</h3>
                     <p>Vous serez redirigé dans quelques secondes...</p>
@@ -168,11 +175,11 @@ async function lancerPaiement() {
                         email: details.payer.email_address,
                         adresse: details.purchase_units[0].shipping && details.purchase_units[0].shipping.address 
                             ? `${details.purchase_units[0].shipping.address.address_line_1 || ''} ${details.purchase_units[0].shipping.address.admin_area_2 || ''} ${details.purchase_units[0].shipping.address.postal_code || ''}`.trim()
-                            : '',
-                        telephone: ''
+                            : 'Retrait au cabinet',
+                        telephone: details.payer.phone && details.payer.phone.phone_number ? details.payer.phone.phone_number.national_number : ''
                     },
                     produits: panier,
-                    total: totalAmountGlobal.toFixed(2),  // Utilisation de la bonne variable ici
+                    total: totalAmountGlobal.toFixed(2), 
                     transactionId: details.id
                 };
         
