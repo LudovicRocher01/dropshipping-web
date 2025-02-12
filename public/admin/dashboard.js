@@ -46,9 +46,9 @@ async function chargerProduits() {
         tableBody.innerHTML = ""; // Efface le contenu actuel
 
         produits.forEach(produit => {
-            const imageUrl = produit.image_url ? produit.image_url : "images/no-image.png"; // Image par défaut
-
             const row = document.createElement("tr");
+            const imageUrl = produit.image_url ? produit.image_url : "images/no-image.png";
+            
             row.innerHTML = `
                 <td>${produit.id}</td>
                 <td>
@@ -56,24 +56,26 @@ async function chargerProduits() {
                     <button onclick="toggleFileInput(${produit.id})">Changer d'image</button>
                     <input type="file" id="image-${produit.id}" data-current-image="${produit.image_url}" style="display: none;">
                 </td>
+                <td><input type="text" value="${produit.categorie}" disabled></td> <!-- Catégorie non modifiable -->
                 <td><input type="text" value="${produit.nom}" id="nom-${produit.id}"></td>
                 <td><input type="text" value="${produit.description}" id="desc-${produit.id}"></td>
-                <td><input type="number" value="${produit.prix}" id="prix-${produit.id}"></td>
-                <td><input type="text" value="${produit.lien_achat}" id="lien-${produit.id}"></td>
+                <td><input type="number" step="0.01" value="${produit.prix}" id="prix-${produit.id}"></td>
+                <td><input type="text" value="${produit.lien_achat}" id="lien-${produit.id}" ${produit.categorie === "spray" ? 'style="display:none;"' : ''}></td>
                 <td>
-                    <select id="categorie-${produit.id}">
-                        <option value="sante" ${produit.categorie === "sante" ? "selected" : ""}>Santé</option>
-                        <option value="livre" ${produit.categorie === "livre" ? "selected" : ""}>Livre</option>
-                        <option value="spray" ${produit.categorie === "spray" ? "selected" : ""}>Spray</option>
-                    </select>
+                    ${produit.categorie === "spray" 
+                    ? `<input type="number" value="${produit.quantite}" id="quantite-${produit.id}" min="0">` 
+                    : ''}
                 </td>
+
                 <td>
                     <button onclick="modifierProduit(${produit.id})">Modifier</button>
                     <button onclick="supprimerProduit(${produit.id})" style="color:red;">Supprimer</button>
                 </td>
             `;
-            tableBody.appendChild(row);
+        
+            document.getElementById("produits-table").appendChild(row);
         });
+        
     } catch (error) {
         console.error("Erreur lors du chargement des produits :", error);
     }
@@ -92,22 +94,27 @@ async function modifierProduit(id) {
     const nom = document.getElementById(`nom-${id}`).value;
     const description = document.getElementById(`desc-${id}`).value;
     const prix = document.getElementById(`prix-${id}`).value;
-    const lien_achat = document.getElementById(`lien-${id}`).value;
-    const categorie = document.getElementById(`categorie-${id}`).value;
-    const imageInput = document.getElementById(`image-${id}`).files[0]; // Vérifier si une image est sélectionnée
-    const currentImage = document.getElementById(`image-${id}`).dataset.currentImage; // Récupérer l'image actuelle
+    const lien_achat = document.getElementById(`lien-${id}`) ? document.getElementById(`lien-${id}`).value : ""; // Vérifie si le champ existe
+    const quantiteField = document.getElementById(`quantite-${id}`);
+    const quantite = quantiteField ? quantiteField.value : null;  // Si c'est un spray, on récupère la quantité
+    const imageInput = document.getElementById(`image-${id}`).files[0];
+    const currentImage = document.getElementById(`image-${id}`).dataset.currentImage; 
+
+    // Récupérer la catégorie depuis la ligne du tableau (comme elle n'est pas modifiable)
+    const categorie = document.querySelector(`tr td:nth-child(3) input[disabled]`).value;  // Récupérer la catégorie directement
 
     const formData = new FormData();
     formData.append("nom", nom);
     formData.append("description", description);
     formData.append("prix", prix);
     formData.append("lien_achat", lien_achat);
-    formData.append("categorie", categorie);
+    formData.append("categorie", categorie); // On envoie toujours la catégorie même si elle n'est pas modifiée
+    if (quantite !== null) formData.append("quantite", quantite); // Ajout de la quantité uniquement pour les sprays
 
     if (imageInput) {
-        formData.append("image", imageInput); // Nouvelle image ajoutée
+        formData.append("image", imageInput);
     } else {
-        formData.append("image_url", currentImage); // Conserver l'image actuelle
+        formData.append("image_url", currentImage);
     }
 
     try {
@@ -149,7 +156,8 @@ document.getElementById("add-product-form").addEventListener("submit", async fun
     formData.append("prix", document.getElementById("prix").value);
     formData.append("lien_achat", document.getElementById("lien_achat").value);
     formData.append("categorie", document.getElementById("categorie").value);
-    formData.append("image", document.getElementById("image").files[0]); // Ajout de l'image
+    formData.append("image", document.getElementById("image").files[0]);
+    formData.append("quantite", document.getElementById("quantite").value);
 
     try {
         const response = await fetch("/api/produits", {
@@ -283,4 +291,19 @@ async function chargerShippingFee() {
   document.addEventListener("DOMContentLoaded", () => {
     chargerShippingFee();
   });
+
+  document.getElementById('categorie').addEventListener('change', function() {
+    const selectedCategory = this.value;
+    const linkField = document.getElementById('link-field');
+    const quantiteField = document.getElementById('quantite-field');
+
+    if (selectedCategory === 'spray') {
+        linkField.style.display = 'none';  // Masquer le champ pour les sprays
+        quantiteField.style.display = 'block';
+    } else {
+        linkField.style.display = 'block'; // Afficher le champ pour les autres catégories
+        quantiteField.style.display = 'none';
+    }
+});
+
   

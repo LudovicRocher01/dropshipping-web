@@ -26,15 +26,27 @@ router.get('/', (req, res) => {
 
 // 🔹 Ajouter un produit avec upload d’image
 router.post('/', upload.single("image"), (req, res) => {
-    const { nom, description, prix, lien_achat, categorie } = req.body;
-    const image_url = req.file ? `/uploads/${req.file.filename}` : null; // Stocke l’URL de l’image
+    const { nom, description, prix, lien_achat, categorie, quantite } = req.body;
+    const image_url = req.file ? `/uploads/${req.file.filename}` : null;
 
     if (!nom || !categorie || !image_url) {
         return res.status(400).json({ error: "Nom, image et catégorie obligatoires" });
     }
 
-    const sql = 'INSERT INTO produits (nom, description, prix, lien_achat, image_url, categorie) VALUES (?, ?, ?, ?, ?, ?)';
-    db.query(sql, [nom, description, prix, lien_achat, image_url, categorie], (err, result) => {
+    let sql, params;
+
+    if (categorie === "spray") {
+        if (!quantite || isNaN(quantite)) {
+            return res.status(400).json({ error: "Quantité requise pour les sprays" });
+        }
+        sql = 'INSERT INTO produits (nom, description, prix, image_url, categorie, quantite) VALUES (?, ?, ?, ?, ?, ?)';
+        params = [nom, description, prix, image_url, categorie, parseInt(quantite)];
+    } else {
+        sql = 'INSERT INTO produits (nom, description, prix, lien_achat, image_url, categorie) VALUES (?, ?, ?, ?, ?, ?)';
+        params = [nom, description, prix, lien_achat, image_url, categorie];
+    }
+
+    db.query(sql, params, (err, result) => {
         if (err) {
             console.error("Erreur lors de l'ajout du produit:", err);
             return res.status(500).json({ error: "Erreur serveur" });
@@ -43,21 +55,41 @@ router.post('/', upload.single("image"), (req, res) => {
     });
 });
 
+
 // 🔹 Modifier un produit
 router.put('/:id', upload.single("image"), (req, res) => {
-    const { nom, description, prix, lien_achat, categorie } = req.body;
+    const { nom, description, prix, lien_achat, quantite } = req.body;
     const { id } = req.params;
-    const image_url = req.file ? `/uploads/${req.file.filename}` : req.body.image_url; // Garder l'image existante si non changée
+    const image_url = req.file ? `/uploads/${req.file.filename}` : req.body.image_url;
 
-    const sql = 'UPDATE produits SET nom=?, description=?, prix=?, lien_achat=?, image_url=?, categorie=? WHERE id=?';
-    db.query(sql, [nom, description, prix, lien_achat, image_url, categorie, id], (err) => {
-        if (err) {
-            console.error('Erreur lors de la modification du produit:', err);
+    // Vérification de la catégorie
+    db.query('SELECT categorie FROM produits WHERE id = ?', [id], (err, results) => {
+        if (err || results.length === 0) {
+            console.error('Erreur lors de la récupération du produit:', err);
             return res.status(500).json({ error: 'Erreur serveur' });
         }
-        res.json({ message: 'Produit mis à jour' });
+
+        const categorie = results[0].categorie;
+        let sql, params;
+
+        if (categorie === 'spray') {
+            sql = 'UPDATE produits SET nom=?, description=?, prix=?, image_url=?, quantite=? WHERE id=?';
+            params = [nom, description, prix, image_url, quantite, id];
+        } else {
+            sql = 'UPDATE produits SET nom=?, description=?, prix=?, lien_achat=?, image_url=? WHERE id=?';
+            params = [nom, description, prix, lien_achat, image_url, id];
+        }
+
+        db.query(sql, params, (err) => {
+            if (err) {
+                console.error('Erreur lors de la modification du produit:', err);
+                return res.status(500).json({ error: 'Erreur serveur' });
+            }
+            res.json({ message: 'Produit mis à jour' });
+        });
     });
 });
+
 
 // 🔹 Supprimer un produit
 router.delete('/:id', (req, res) => {

@@ -90,14 +90,28 @@ document.getElementById("retraitMagasin").addEventListener("change", afficherPan
 // Gestion du panier (quantité et suppression)
 // ---------------------------
 function modifierQuantite(id, changement) {
-    let panier = getPanier();
+    let panier = JSON.parse(localStorage.getItem("panier")) || [];
     let produit = panier.find(prod => prod.id == id);
+
     if (produit) {
-        produit.quantite += changement;
-        if (produit.quantite <= 0) {
-            panier = panier.filter(prod => prod.id != id);
+        const maxQuantite = produit.maxQuantite || Infinity; // Pas de limite par défaut
+
+        if (changement > 0) {
+            if (produit.quantite < maxQuantite) {
+                produit.quantite += changement;
+            } else {
+                showToast(`Vous avez atteint la quantité maximale disponible pour ${produit.nom}.`);
+                return;
+            }
+        } else {
+            produit.quantite += changement;
+            if (produit.quantite <= 0) {
+                panier = panier.filter(prod => prod.id != id);  // Retirer le produit si la quantité est 0
+                showToast(`${produit.nom} a été retiré de votre panier.`);
+            }
         }
     }
+
     localStorage.setItem("panier", JSON.stringify(panier));
     afficherPanier();
     mettreAJourBadgePanier();
@@ -212,7 +226,7 @@ async function lancerPaiement() {
         
         onError: function(err) {
             console.error('Erreur lors du paiement:', err);
-            alert('Une erreur est survenue lors du paiement.');
+            showToast(`Une erreur est survenue lors du paiement`);
         }
     }).render('#paypal-button-container');
 }
@@ -229,6 +243,18 @@ async function getShippingFee() {
     }
 }
 
+function showToast(message, duration = 3000) {
+    const toast = document.getElementById("toast");
+    toast.textContent = message;
+    toast.classList.remove("hidden");
+    toast.classList.add("visible");
+
+    // Après un certain temps, la notification disparaît
+    setTimeout(() => {
+        toast.classList.remove("visible");
+        setTimeout(() => toast.classList.add("hidden"), 500);  // Attendre que l'animation se termine avant de cacher
+    }, duration);
+}
 
 // ---------------------------
 // Initialisation au chargement du DOM

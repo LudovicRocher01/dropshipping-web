@@ -23,11 +23,12 @@
         <tr>
             <th>ID</th>
             <th>Image</th>
+            <th>Catégorie</th>
             <th>Nom</th>
             <th>Description</th>
             <th>Prix</th>
             <th>Lien d'achat</th>
-            <th>Catégorie</th>
+            <th>Quantité</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -39,18 +40,24 @@
 
         <h3>Ajouter un Produit</h3>
         <form id="add-product-form" enctype="multipart/form-data">
-            <input type="text" id="nom" placeholder="Nom du produit" required>
-            <input type="text" id="description" placeholder="Description">
-            <input type="number" id="prix" placeholder="Prix" required>
-            <input type="text" id="lien_achat" placeholder="Lien d'achat">
-            <input type="file" id="image" accept="image/*" required>
             <select id="categorie" required>
                 <option value="sante">Santé</option>
                 <option value="livre">Livre</option>
                 <option value="spray">Spray</option>
             </select>
+            <input type="text" id="nom" placeholder="Nom du produit" required>
+            <input type="text" id="description" placeholder="Description">
+            <input type="number" id="prix" placeholder="Prix" step="0.01" required>
+            <div id="link-field">
+                <input type="text" id="lien_achat" placeholder="Lien d'achat">
+            </div>
+            <input type="file" id="image" accept="image/*" required>
+            <div id="quantite-field" style="display:none;">
+                <input type="number" id="quantite" placeholder="Quantité" min="0">
+            </div>
             <button type="submit">Ajouter Produit</button>
         </form>
+        
         
         <button id="show-orders">Voir les Commandes</button>
 
