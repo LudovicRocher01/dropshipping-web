@@ -4,16 +4,15 @@ const db = require('../models/db');
 const multer = require('multer');
 const path = require('path');
 
-// Configuration de multer pour stocker les images
 const storage = multer.diskStorage({
-    destination: "uploads/", // Dossier où seront stockées les images
+    destination: "uploads/",
     filename: (req, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname)); // Génère un nom unique
+        cb(null, Date.now() + path.extname(file.originalname));
     }
 });
 const upload = multer({ storage: storage });
 
-// 🔹 Récupérer tous les produits
+// Récupérer les produits
 router.get('/', (req, res) => {
     db.query('SELECT * FROM produits', (err, results) => {
         if (err) {
@@ -24,7 +23,7 @@ router.get('/', (req, res) => {
     });
 });
 
-// 🔹 Ajouter un produit avec upload d’image
+// Ajouter un produit
 router.post('/', upload.single("image"), (req, res) => {
     const { nom, description, prix, lien_achat, categorie, quantite } = req.body;
     const image_url = req.file ? `/uploads/${req.file.filename}` : null;
@@ -56,13 +55,12 @@ router.post('/', upload.single("image"), (req, res) => {
 });
 
 
-// 🔹 Modifier un produit
+// Modifier un produit
 router.put('/:id', upload.single("image"), (req, res) => {
     const { nom, description, prix, lien_achat, quantite } = req.body;
     const { id } = req.params;
     const image_url = req.file ? `/uploads/${req.file.filename}` : req.body.image_url;
 
-    // Vérification de la catégorie
     db.query('SELECT categorie FROM produits WHERE id = ?', [id], (err, results) => {
         if (err || results.length === 0) {
             console.error('Erreur lors de la récupération du produit:', err);
@@ -91,7 +89,7 @@ router.put('/:id', upload.single("image"), (req, res) => {
 });
 
 
-// 🔹 Supprimer un produit
+// Supprimer un produit
 router.delete('/:id', (req, res) => {
     const { id } = req.params;
 
@@ -105,7 +103,6 @@ router.delete('/:id', (req, res) => {
     });
 });
 
-// 🔹 Servir les images statiquement
 router.use("/uploads", express.static("uploads"));
 
 module.exports = router;

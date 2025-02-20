@@ -2,7 +2,7 @@ async function verifierAuth() {
     const token = sessionStorage.getItem("adminToken");
 
     if (!token) {
-        window.location.href = "login.html";
+        window.location.href = "index.html";
         return;
     }
 
@@ -20,30 +20,17 @@ async function verifierAuth() {
         }
     } catch (error) {
         sessionStorage.removeItem("adminToken");
-        window.location.href = "login.html";
+        window.location.href = "index.html";
     }
 }
 
-// Vérifier l'authentification dès le chargement
-verifierAuth();
-
-
-
-// Déconnexion
-document.getElementById("logout").addEventListener("click", function () {
-    sessionStorage.removeItem("adminToken"); // Supprime le token
-    window.location.href = "login.html"; // Redirige vers la page de connexion
-});
-
-
-// Fonction pour charger les produits
 async function chargerProduits() {
     try {
         const response = await fetch("/api/produits");
         const produits = await response.json();
 
         const tableBody = document.getElementById("produits-table");
-        tableBody.innerHTML = ""; // Efface le contenu actuel
+        tableBody.innerHTML = "";
 
         produits.forEach(produit => {
             const row = document.createElement("tr");
@@ -81,35 +68,29 @@ async function chargerProduits() {
     }
 }
 
-
-// Fonction pour afficher/masquer l'input file pour changer l'image
 function toggleFileInput(id) {
     const fileInput = document.getElementById(`image-${id}`);
     fileInput.style.display = fileInput.style.display === "none" ? "block" : "none";
 }
 
-
-// Fonction pour modifier un produit
 async function modifierProduit(id) {
     const nom = document.getElementById(`nom-${id}`).value;
     const description = document.getElementById(`desc-${id}`).value;
     const prix = document.getElementById(`prix-${id}`).value;
-    const lien_achat = document.getElementById(`lien-${id}`) ? document.getElementById(`lien-${id}`).value : ""; // Vérifie si le champ existe
-    const quantiteField = document.getElementById(`quantite-${id}`);
-    const quantite = quantiteField ? quantiteField.value : null;  // Si c'est un spray, on récupère la quantité
+    const lien_achat = document.getElementById(`lien-${id}`) ? document.getElementById(`lien-${id}`).value : "";
+    const quantite = document.getElementById(`quantite-${id}`)?.value ?? null;
     const imageInput = document.getElementById(`image-${id}`).files[0];
     const currentImage = document.getElementById(`image-${id}`).dataset.currentImage; 
 
-    // Récupérer la catégorie depuis la ligne du tableau (comme elle n'est pas modifiable)
-    const categorie = document.querySelector(`tr td:nth-child(3) input[disabled]`).value;  // Récupérer la catégorie directement
+    const categorie = document.querySelector(`tr td:nth-child(3) input[disabled]`).value;
 
     const formData = new FormData();
     formData.append("nom", nom);
     formData.append("description", description);
     formData.append("prix", prix);
     formData.append("lien_achat", lien_achat);
-    formData.append("categorie", categorie); // On envoie toujours la catégorie même si elle n'est pas modifiée
-    if (quantite !== null) formData.append("quantite", quantite); // Ajout de la quantité uniquement pour les sprays
+    formData.append("categorie", categorie);
+    if (quantite !== null) formData.append("quantite", quantite);
 
     if (imageInput) {
         formData.append("image", imageInput);
@@ -131,7 +112,6 @@ async function modifierProduit(id) {
 }
 
 
-// Fonction pour supprimer un produit
 async function supprimerProduit(id) {
     if (!confirm("Voulez-vous vraiment supprimer ce produit ?")) return;
 
@@ -145,8 +125,6 @@ async function supprimerProduit(id) {
     }
 }
 
-// Fonction pour ajouter un produit
-// Fonction pour ajouter un produit avec image
 document.getElementById("add-product-form").addEventListener("submit", async function (event) {
     event.preventDefault();
 
@@ -162,7 +140,7 @@ document.getElementById("add-product-form").addEventListener("submit", async fun
     try {
         const response = await fetch("/api/produits", {
             method: "POST",
-            body: formData // Envoi correct des données avec image
+            body: formData
         });
 
         if (!response.ok) {
@@ -170,39 +148,24 @@ document.getElementById("add-product-form").addEventListener("submit", async fun
         }
 
         alert("Produit ajouté !");
-        chargerProduits(); // Rafraîchir la liste des produits
-        document.getElementById("add-product-form").reset(); // Réinitialiser le formulaire
+        chargerProduits();
+        document.getElementById("add-product-form").reset();
     } catch (error) {
         console.error("Erreur lors de l'ajout du produit :", error);
     }
 });
 
-
-// Charger les produits au chargement de la page
-chargerProduits();
-
-// Afficher/Masquer la section des commandes
-document.getElementById("show-orders").addEventListener("click", function () {
-    const section = document.getElementById("commandes-section");
-    section.style.display = section.style.display === "none" ? "block" : "none";
-    if (section.style.display === "block") {
-        chargerCommandes();
-    }
-});
-
-// Fonction pour récupérer et afficher les commandes
 async function chargerCommandes() {
     try {
         const response = await fetch("/api/commandes");
         const commandes = await response.json();
 
         const commandesTable = document.getElementById("commandes-table");
-        commandesTable.innerHTML = ""; // Nettoyer le tableau
+        commandesTable.innerHTML = "";
 
         commandes.forEach(commande => {
             const row = document.createElement("tr");
 
-            // Parse order_details
             let produits;
             try {
                 produits = JSON.parse(commande.order_details);
@@ -216,7 +179,6 @@ async function chargerCommandes() {
             });
             produitsHTML += "</ul>";
 
-            // Vérifier si l'adresse est "Retrait au cabinet"
             const adresseAffichee = commande.adresse === "Retrait au cabinet" ? "Retrait au cabinet" : commande.adresse;
 
             row.innerHTML = `
@@ -235,8 +197,6 @@ async function chargerCommandes() {
     }
 }
 
-
-// Fonction pour archiver une commande
 async function supprimerCommande(id) {
     if (!confirm("Êtes-vous sûr de vouloir archiver cette commande ?")) {
         return;
@@ -247,18 +207,13 @@ async function supprimerCommande(id) {
         });
         const data = await response.json();
         alert(data.message);
-        chargerCommandes(); // Rafraîchir la liste des commandes
+        chargerCommandes();
     } catch (error) {
         console.error("Erreur lors de la suppression de la commande :", error);
         alert("Une erreur est survenue lors de la suppression de la commande.");
     }
 }
 
-// 📌 Charger les commandes au chargement de la page
-document.addEventListener("DOMContentLoaded", chargerCommandes);
-
-
-// Fonction pour récupérer les frais de port depuis le serveur et les afficher dans le champ
 async function chargerShippingFee() {
     try {
       const response = await fetch('/api/settings/shipping_fee');
@@ -267,12 +222,28 @@ async function chargerShippingFee() {
         document.getElementById("shipping_fee").value = parseFloat(data.setting);
       }
     } catch (error) {
-      console.error("Erreur lors du chargement des frais de port :", error);
+        console.error("Erreur lors du chargement des frais de port :", error);
     }
-  }
+}
   
-  // Fonction pour mettre à jour les frais de port sur le serveur
-  document.getElementById("update-shipping").addEventListener("click", async () => {
+verifierAuth();
+chargerProduits();
+chargerShippingFee();
+
+document.getElementById("logout").addEventListener("click", function () {
+    sessionStorage.removeItem("adminToken");
+    window.location.href = "index.html";
+});
+
+document.getElementById("show-orders").addEventListener("click", function () {
+    const section = document.getElementById("commandes-section");
+    section.style.display = section.style.display === "none" ? "block" : "none";
+    if (section.style.display === "block") {
+        chargerCommandes();
+    }
+});
+
+document.getElementById("update-shipping").addEventListener("click", async () => {
     const newFee = document.getElementById("shipping_fee").value;
     try {
       const response = await fetch('/api/settings/shipping_fee', {
@@ -283,7 +254,6 @@ async function chargerShippingFee() {
       const data = await response.json();
       if (data.message) {
         alert("Frais de port mis à jour avec succès !");
-        // Vous pouvez actualiser l'affichage du panier si nécessaire
       }
     } catch (error) {
       console.error("Erreur lors de la mise à jour des frais de port :", error);
@@ -291,23 +261,16 @@ async function chargerShippingFee() {
     }
   });
   
-  // Charger les frais de port au chargement du DOM
-  document.addEventListener("DOMContentLoaded", () => {
-    chargerShippingFee();
-  });
-
-  document.getElementById('categorie').addEventListener('change', function() {
+document.getElementById('categorie').addEventListener('change', function() {
     const selectedCategory = this.value;
     const linkField = document.getElementById('link-field');
     const quantiteField = document.getElementById('quantite-field');
 
     if (selectedCategory === 'spray') {
-        linkField.style.display = 'none';  // Masquer le champ pour les sprays
+        linkField.style.display = 'none';
         quantiteField.style.display = 'block';
     } else {
-        linkField.style.display = 'block'; // Afficher le champ pour les autres catégories
+        linkField.style.display = 'block';
         quantiteField.style.display = 'none';
     }
 });
-
-  

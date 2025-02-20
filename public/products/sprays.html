@@ -6,9 +6,9 @@
     <title>Sprays</title>
     <link rel="stylesheet" href="../styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"> 
 </head>
+
 <body>
     <nav class="navbar">
         <div class="nav-container">
@@ -17,60 +17,16 @@
             <button class="cart-btn" onclick="ouvrirPanier()">
                 <i class="fas fa-shopping-cart"></i> Panier <span class="cart-count">0</span>
             </button>
-            
         </div>
-    </nav>
-    
+    </nav>  
     
     <section class="produits-section">
-        <div class="produits-container" id="produits-container">
-            <!-- Les produits sont ajoutés ici dynamiquement -->
-        </div>
+        <div class="produits-container" id="produits-container"></div>
     </section>
     
-
-    <footer class="footer">
-        <div class="footer-container">
-            <div class="footer-contact">
-                <h3>Contactez-moi</h3>
-                <p><i class="fas fa-phone-alt"></i> Téléphone : <a href="tel:+33000000000">+33 6 63 27 73 65</a></p>
-                <p><i class="fas fa-envelope"></i> Email : <a href="mailto:contact@osteozen.net">contact@osteozen.net</a></p>
-            </div>
-            <div class="footer-info">
-                <p>© 2025 Osteozen. Tous droits réservés.</p>
-            </div>
-        </div>
-    </footer>
-
-    <script src="../script.js"></script>
+    <div id="footer-container"></div>
     <div id="toast" class="toast hidden"></div>
 
-<div id="sidebar-panier" class="sidebar">
-    <div class="sidebar-header">
-        <h2>Votre Panier</h2>
-        <button class="close-btn" onclick="fermerPanier()">&times;</button>
-    </div>
-    <div class="sidebar-content">
-        <div id="panier-container">
-            <p>Votre panier est vide.</p>
-        </div>
-        <div class="amount">
-            <div class="subtotal">
-                <span>Sous-total</span> <span>€ <span id="subtotal">0.00</span></span>
-            </div>
-            <div class="shipping">
-                <span>Livraison</span> <span>€ <span id="shipping">0.00</span></span>
-            </div>
-            <div class="total">
-                <span>Total</span> <span>€ <span id="total">0.00</span></span>
-            </div>
-            <label>
-                <input type="checkbox" id="retraitMagasin"> Retrait au cabinet (gratuit)
-            </label>
-        </div>
-        <button id="validerPanier" class="btn-commander">Commander</button>
-    </div>
-</div>
-
+    <script src="../script.js"></script>
 </body>
 </html>

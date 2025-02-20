@@ -2,11 +2,10 @@ const nodemailer = require('nodemailer');
 const dns = require('dns');
 dns.setDefaultResultOrder('ipv4first');
 
-// Utilise un compte Ethereal existant pour simplifier
 const transporter = nodemailer.createTransport({
   host: 'smtp.ethereal.email',
   port: 587,
-  secure: false, // STARTTLS
+  secure: false,
   auth: {
     user: 'georgette.oconner@ethereal.email',
     pass: 'zjVgBWVcQf7eBaXt8g'

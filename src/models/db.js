@@ -1,6 +1,5 @@
 const mysql = require('mysql');
 
-// Chargement des variables d'environnement (optionnel si déjà fait dans app.js)
 // require('dotenv').config();
 
 const db = mysql.createConnection({

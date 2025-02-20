@@ -1,0 +1,26 @@
+<div id="sidebar-panier" class="sidebar">
+    <div class="sidebar-header">
+        <h2>Votre Panier</h2>
+        <button class="close-btn" onclick="fermerPanier()">&times;</button>
+    </div>
+    <div class="sidebar-content">
+        <div id="panier-container">
+            <p>Votre panier est vide.</p>
+        </div>
+        <div class="amount">
+            <div class="subtotal">
+                <span>Sous-total</span> <span>€ <span id="subtotal">0.00</span></span>
+            </div>
+            <div class="shipping">
+                <span>Livraison</span> <span>€ <span id="shipping">0.00</span></span>
+            </div>
+            <div class="total">
+                <span>Total</span> <span>€ <span id="total">0.00</span></span>
+            </div>
+            <label>
+                <input type="checkbox" id="retraitMagasin"> Retrait au cabinet (gratuit)
+            </label>
+        </div>
+        <button id="validerPanier" class="btn-commander">Commander</button>
+    </div>
+</div>

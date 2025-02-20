@@ -16,8 +16,8 @@ document.getElementById("login-form").addEventListener("submit", async function 
             throw new Error(data.error);
         }
 
-        sessionStorage.setItem("adminToken", data.token); // Stocker le token JWT
-        window.location.href = "dashboard.html"; // Rediriger vers le tableau de bord
+        sessionStorage.setItem("adminToken", data.token);
+        window.location.href = "dashboard.html";
     } catch (error) {
         document.getElementById("error-message").textContent = error.message;
         document.getElementById("error-message").style.display = "block";

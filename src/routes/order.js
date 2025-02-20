@@ -1,11 +1,9 @@
-// routes/order.js
 const express = require('express');
 const router = express.Router();
-const db = require('../models/db'); // Assurez-vous que ce chemin est correct
+const db = require('../models/db');
 
-// Endpoint pour recalculer le total du panier
 router.post('/total', (req, res) => {
-  const { panier, retraitMagasin } = req.body;  // On récupère l'option de retrait
+  const { panier, retraitMagasin } = req.body;
 
   if (!panier || !Array.isArray(panier)) {
     return res.status(400).json({ error: 'Données du panier invalides' });
@@ -28,17 +26,15 @@ router.post('/total', (req, res) => {
   Promise.all(queries)
     .then(() => {
       if (retraitMagasin) {
-        // Si l'utilisateur choisit le retrait, pas de frais de port
         res.json({ total: total.toFixed(2) });
       } else {
-        // Sinon, on ajoute les frais de port
         db.query('SELECT setting_value FROM settings WHERE setting_key = ?', ['shipping_fee'], (err, results) => {
           if (err) {
             console.error(err);
             return res.status(500).json({ error: 'Erreur lors du calcul des frais de port' });
           }
 
-          let shippingFee = 5; // Valeur par défaut
+          let shippingFee = 5;
           if (results.length > 0) {
             shippingFee = parseFloat(results[0].setting_value);
             if (isNaN(shippingFee)) {

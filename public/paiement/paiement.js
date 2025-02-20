@@ -1,14 +1,12 @@
-// 📌 Récupérer le panier validé depuis `sessionStorage`
 function getPanierValide() {
     return JSON.parse(sessionStorage.getItem("panierValide")) || [];
 }
 
-// 📌 Afficher le panier dans la page paiement
-async function afficherPaiement() {
+async function afficherPanier() {
     let panier = getPanierValide();
     let container = document.getElementById("paiement-container");
-
     container.innerHTML = "";
+
     if (panier.length === 0) {
         container.innerHTML = "<p>Votre panier est vide. Retournez choisir des produits.</p>";
         return;
@@ -37,7 +35,6 @@ async function afficherPaiement() {
         container.appendChild(produitDiv);
     });
 
-    // Met à jour les montants
     const retraitMagasin = sessionStorage.getItem("retraitMagasin") === "true";
     const shipping = retraitMagasin ? 0 : await getShippingFee();
     let total = subtotal + shipping;
@@ -45,13 +42,8 @@ async function afficherPaiement() {
     document.getElementById("subtotal").textContent = subtotal.toFixed(2);
     document.getElementById("shipping").textContent = shipping.toFixed(2);
     document.getElementById("total").textContent = total.toFixed(2);
-
-    if (document.getElementById("retraitMagasin")) {
-        document.getElementById("retraitMagasin").checked = retraitMagasin;
-    }
 }
 
-// 📌 Récupérer les frais de port
 async function getShippingFee() {
     try {
         const response = await fetch('/api/settings/shipping_fee');
@@ -63,13 +55,13 @@ async function getShippingFee() {
     }
 }
 
-// 📌 Lancer le paiement via PayPal
 async function lancerPaiement() {
     let panier = getPanierValide();
     if (panier.length === 0) {
         alert("Votre panier est vide !");
         return;
     }
+
     const retraitMagasin = sessionStorage.getItem("retraitMagasin") === "true";
     const shippingFee = retraitMagasin ? 0 : await getShippingFee();
     let totalAmountGlobal = panier.reduce((total, prod) => total + prod.prix * prod.quantite, 0) + shippingFee;
@@ -84,7 +76,6 @@ async function lancerPaiement() {
         },
         onApprove: function (data, actions) {
             return actions.order.capture().then(function (details) {
-                // Vérifie si l'utilisateur a choisi le retrait en magasin
                 const adresseFinale = retraitMagasin ? "Retrait au cabinet" :
                     `${details.purchase_units[0].shipping?.address.address_line_1}, ${details.purchase_units[0].shipping.address.admin_area_2}, ${details.purchase_units[0].shipping.address.postal_code}`;
 
@@ -102,13 +93,11 @@ async function lancerPaiement() {
                     transactionId: details.id
                 };
 
-                // 📌 Stocker dans sessionStorage pour le récapitulatif
                 sessionStorage.setItem("orderClient", JSON.stringify(client));
                 sessionStorage.setItem("orderProduits", JSON.stringify(panier));
                 sessionStorage.setItem("orderTotal", totalAmountGlobal.toFixed(2));
                 sessionStorage.setItem("orderTransactionId", details.id);
 
-                // 📌 Envoyer au serveur
                 fetch('/api/commande/submit', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -127,8 +116,7 @@ async function lancerPaiement() {
 }
 
 
-// 📌 Initialisation
 document.addEventListener("DOMContentLoaded", () => {
-    afficherPaiement()
+    afficherPanier()
     lancerPaiement();
 });
