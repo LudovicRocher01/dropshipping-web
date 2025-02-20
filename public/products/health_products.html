@@ -14,7 +14,7 @@
         <div class="nav-container">
             <a href="../index.html" class="logo">🌿 Osteozen</a>
             <h1 class="page-title">Les produits de santé</h1>
-            <button class="cart-btn" onclick="window.location.href='../panier.html'">
+            <button class="cart-btn" onclick="ouvrirPanier()">
                 <i class="fas fa-shopping-cart"></i> Panier <span class="cart-count">0</span>
             </button>
         </div>
@@ -40,5 +40,32 @@
     </footer>
 
     <script src="../script.js"></script>
+    <!-- Sidebar Panier -->
+<div id="sidebar-panier" class="sidebar">
+    <div class="sidebar-header">
+        <h2>Votre Panier</h2>
+        <button class="close-btn" onclick="fermerPanier()">&times;</button>
+    </div>
+    <div class="sidebar-content">
+        <div id="panier-container">
+            <p>Votre panier est vide.</p>
+        </div>
+        <div class="amount">
+            <div class="subtotal">
+                <span>Sous-total</span> <span>€ <span id="subtotal">0.00</span></span>
+            </div>
+            <div class="shipping">
+                <span>Livraison</span> <span>€ <span id="shipping">0.00</span></span>
+            </div>
+            <div class="total">
+                <span>Total</span> <span>€ <span id="total">0.00</span></span>
+            </div>
+            <label>
+                <input type="checkbox" id="retraitMagasin"> Retrait au cabinet (gratuit)
+            </label>
+        </div>
+        <button id="validerPanier" class="btn-commander">Commander</button>
+    </div>
+</div>
 </body>
 </html>

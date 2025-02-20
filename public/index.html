@@ -11,7 +11,7 @@
     <nav class="navbar">
         <div class="nav-container">
             <a href="index.html" class="logo">🌿 Osteozen</a>
-            <button class="cart-btn" onclick="window.location.href='panier.html'">
+            <button class="cart-btn" onclick="ouvrirPanier()">
                 <i class="fas fa-shopping-cart"></i> Panier <span class="cart-count">0</span>
             </button>
         </div>
@@ -47,20 +47,36 @@
             </div>
         </div>
     </footer>
-    
+
+    <script src="../script.js"></script>
+    <div id="toast" class="toast hidden"></div>
+
+    <div id="sidebar-panier" class="sidebar">
+        <div class="sidebar-header">
+            <h2>Votre Panier</h2>
+            <button class="close-btn" onclick="fermerPanier()">&times;</button>
+        </div>
+        <div class="sidebar-content">
+            <div id="panier-container">
+                <p>Votre panier est vide.</p>
+            </div>
+            <div class="amount">
+                <div class="subtotal">
+                    <span>Sous-total</span> <span>€ <span id="subtotal">0.00</span></span>
+                </div>
+                <div class="shipping">
+                    <span>Livraison</span> <span>€ <span id="shipping">0.00</span></span>
+                </div>
+                <div class="total">
+                    <span>Total</span> <span>€ <span id="total">0.00</span></span>
+                </div>
+                <label>
+                    <input type="checkbox" id="retraitMagasin"> Retrait au cabinet (gratuit)
+                </label>
+            </div>
+            <button id="validerPanier" class="btn-commander">Commander</button>
+        </div>
+    </div>
 </body>
 </html>
 
-<script>
-    // Mettre à jour le badge du panier sur toutes les pages
-function mettreAJourBadgePanier() {
-    let panier = JSON.parse(localStorage.getItem("panier")) || [];
-    document.querySelectorAll(".cart-count").forEach(span => {
-        span.textContent = panier.reduce((total, prod) => total + prod.quantite, 0);
-    });
-}
-
-// Mettre à jour le badge du panier dès le chargement de la page
-document.addEventListener("DOMContentLoaded", mettreAJourBadgePanier);
-
-</script>

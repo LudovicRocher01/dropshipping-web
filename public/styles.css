@@ -13,7 +13,7 @@ body {
   padding: 10px 20px; /* Réduire le padding */
   background: linear-gradient(to right, #4CAF50, #2196F3);
   color: white;
-  justify-content: center;
+  justify-content: space-between;
   display: flex;
   align-items: center;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -61,7 +61,6 @@ body {
   font-size: 1rem;
   cursor: pointer;
   border-radius: 5px;
-  margin-left: auto;
 }
 
 
@@ -391,4 +390,188 @@ body {
 
 .toast.hidden {
   display: none;
+}
+/* 📌 Sidebar du panier */
+.sidebar {
+  position: fixed;
+  right: -410px;
+  top: 0;
+  width: 400px;
+  height: 100%;
+  background: #fff;
+  box-shadow: -4px 0 10px rgba(0, 0, 0, 0.15);
+  transition: right 0.3s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  z-index: 1001;
+  border-left: none;
+  
+}
+
+.sidebar.open {
+  right: 0;
+}
+
+/* 📌 En-tête du panier */
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background: #4CAF50;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4); /* 🔹 Fond sombre semi-transparent */
+  z-index: 1000;
+  display: none; /* ❌ Caché par défaut */
+}
+
+.sidebar-overlay.active {
+  display: block; /* 🔥 S'affiche quand la sidebar est ouverte */
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 22px;
+  color: white;
+  cursor: pointer;
+}
+
+/* 📌 Contenu du panier */
+.sidebar-content {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+/* 📌 Produits dans le panier */
+.product-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f8f8f8;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.product-card img {
+  width: 50px;
+  height: 50px;
+  border-radius: 5px;
+  object-fit: cover;
+}
+
+.product-info {
+  flex: 1;
+  margin-left: 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+.product-name {
+  font-size: 14px;
+  font-weight: bold;
+  color: #333;
+}
+
+.product-qty {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 5px;
+}
+
+.product-qty button {
+  background: #4CAF50;
+  border: none;
+  color: white;
+  font-size: 16px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.product-qty span {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+/* 📌 Supprimer un produit */
+.delete-btn {
+  background: none;
+  border: none;
+  color: red;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+/* 📌 Montants (total, sous-total, livraison) */
+.amount {
+  background: #fff;
+  padding: 15px;
+  border-radius: 8px;
+  margin-top: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-size: 15px;
+}
+
+.amount div {
+  display: flex;
+  justify-content: space-between;
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.total {
+  font-weight: bold;
+  font-size: 20px;
+  border-top: 2px solid #ddd;
+  padding-top: 10px;
+}
+
+/* 📌 Retrait en magasin */
+label {
+  display: flex;
+  align-items: center;
+  font-size: 15px;
+  margin-top: 10px;
+}
+
+input[type="checkbox"] {
+  margin-right: 8px;
+}
+
+/* 📌 Bouton Commander */
+.btn-commander {
+  width: 100%;
+  background: #007BFF;
+  color: white;
+  border: none;
+  padding: 14px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 15px;
+  transition: background 0.3s;
+}
+
+.btn-commander:hover {
+  background: #0056b3;
 }

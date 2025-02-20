@@ -202,7 +202,7 @@ async function chargerCommandes() {
         commandes.forEach(commande => {
             const row = document.createElement("tr");
 
-            // Si order_details est stocké en tant que chaîne JSON, on le parse
+            // Parse order_details
             let produits;
             try {
                 produits = JSON.parse(commande.order_details);
@@ -216,15 +216,14 @@ async function chargerCommandes() {
             });
             produitsHTML += "</ul>";
 
-            // Formater la date (par exemple, en local)
-            const dateCommande = new Date(commande.created_at).toLocaleString();
+            // Vérifier si l'adresse est "Retrait au cabinet"
+            const adresseAffichee = commande.adresse === "Retrait au cabinet" ? "Retrait au cabinet" : commande.adresse;
 
             row.innerHTML = `
                 <td>${commande.id}</td>
                 <td>${commande.prenom} ${commande.nom}</td>
                 <td>${commande.email}</td>
-                <td>${commande.adresse}</td>
-                <td>${dateCommande}</td>
+                <td>${adresseAffichee}</td>
                 <td>${produitsHTML}</td>
                 <td>${parseFloat(commande.total).toFixed(2)} €</td>
                 <td><button onclick="supprimerCommande(${commande.id})" class="delete-btn">Archiver</button></td>
@@ -237,6 +236,7 @@ async function chargerCommandes() {
 }
 
 
+// Fonction pour archiver une commande
 async function supprimerCommande(id) {
     if (!confirm("Êtes-vous sûr de vouloir archiver cette commande ?")) {
         return;
@@ -253,6 +253,10 @@ async function supprimerCommande(id) {
         alert("Une erreur est survenue lors de la suppression de la commande.");
     }
 }
+
+// 📌 Charger les commandes au chargement de la page
+document.addEventListener("DOMContentLoaded", chargerCommandes);
+
 
 // Fonction pour récupérer les frais de port depuis le serveur et les afficher dans le champ
 async function chargerShippingFee() {

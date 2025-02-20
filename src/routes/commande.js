@@ -30,6 +30,7 @@ router.post('/submit', (req, res) => {
   Promise.all(stockCheckPromises)
     .then(() => {
       // Étape 2: Enregistrer la commande dans la base de données
+      const adresseFinale = client.adresse === "Retrait au cabinet" ? "Retrait au cabinet" : client.adresse;
       const sql = `
         INSERT INTO commandes 
         (prenom, nom, email, adresse, telephone, total, transaction_id, order_details) 
@@ -37,12 +38,14 @@ router.post('/submit', (req, res) => {
       `;
       
       const orderDetails = JSON.stringify(produits);
+      const telephone = client.telephone && client.telephone !== "NULL" ? client.telephone : "Non renseigné";
+
       const values = [
         client.prenom,
         client.nom,
         client.email,
-        client.adresse,
-        client.telephone,
+        adresseFinale,
+        telephone,
         total,
         transactionId,
         orderDetails

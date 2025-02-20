@@ -3,40 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panier</title>
+    <title>Paiement</title>
     <link rel="stylesheet" href="cashStyles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
-
     <script src="https://www.paypal.com/sdk/js?client-id=ASWrqvfWjZ9oyvhNDXGLaFgwc9njJzhDYtp23ch7a3vCFbiC6UtYVnFs1sY4tfyW1w4P7gWkTOP-l9fI&currency=EUR"></script>
 </head>
 <body>
     <nav class="navbar">
         <div class="nav-container">
             <a href="index.html" class="logo">🌿 Osteozen</a>
-            <button class="cart-btn">
-                <i class="fas fa-shopping-cart"></i> Panier <span class="cart-count">0</span>
-            </button>
         </div>
     </nav>
 
     <main class="container">
         <h1 class="heading">
-            <ion-icon name="cart-outline"></ion-icon> Votre Panier
+            <ion-icon name="card-outline"></ion-icon> Paiement sécurisé
         </h1>
 
         <div class="item-flex">
             <section class="checkout">
-                <h2 class="section-heading">Veuillez choisir un mode de Paiement :</h2>
+                <h2 class="section-heading">Confirmer et payer</h2>
                 <div id="paypal-button-container"></div>
             </section>
 
             <section class="cart">
-                <div class="cart-item-box" id="panier-container">
-                    <h2 class="section-heading">Résumé de la Commande</h2>
-                    <p>Votre panier est vide.</p>
+                <div class="cart-item-box" id="paiement-container">
+                    <h2 class="section-heading">Détails de votre commande</h2>
+                    <p>Chargement...</p>
                 </div>
                 <div class="wrapper">
                     <div class="amount">
@@ -49,16 +44,14 @@
                         <div class="total">
                             <span>Total</span> <span>€ <span id="total">0.00</span></span>
                         </div>
-                        <label>
-                            <input type="checkbox" id="retraitMagasin"> Retrait au cabinet (gratuit)
-                        </label>
                     </div>
                 </div>
             </section>
         </div>
     </main>
+
     <div id="toast" class="toast hidden"></div>
 
-    <script src="panier.js"></script>
+    <script src="paiement.js"></script>
 </body>
 </html>

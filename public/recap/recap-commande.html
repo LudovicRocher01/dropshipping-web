@@ -22,27 +22,29 @@
   </main>
   <script>
     // Récupérer les informations du client et de la commande depuis sessionStorage
-    const clientData = JSON.parse(sessionStorage.getItem("orderClient"));
-    const produits = JSON.parse(sessionStorage.getItem("orderProduits"));
-    const total = sessionStorage.getItem("orderTotal");
+// 📌 Récupérer les informations de la commande depuis sessionStorage
+const clientData = JSON.parse(sessionStorage.getItem("orderClient"));
+const produits = JSON.parse(sessionStorage.getItem("orderProduits"));
+const total = sessionStorage.getItem("orderTotal");
 
-    // Mettre à jour le message de remerciement avec le prénom et le nom
+// 📌 Vérifier si l'utilisateur a choisi "Retrait au cabinet"
+const adresseAffichee = clientData.adresse === "Retrait au cabinet" ? "Retrait au cabinet" : clientData.adresse;
 
-  if (clientData) {
-      document.getElementById("remerciement").textContent = `Merci ${clientData.prenom} ${clientData.nom} pour votre commande !`;
-      const recapDiv = document.getElementById("recap");
-    
-      recapDiv.innerHTML += `<p>Email : ${clientData.email}</p>`;
-      recapDiv.innerHTML += `<p>Adresse : ${clientData.adresse === "Retrait au cabinet" ? "Retrait au cabinet" : clientData.adresse}</p>`;
-  }
-
-
-    // Afficher le récapitulatif de la commande
+// 📌 Mettre à jour le message de remerciement avec le prénom et le nom
+if (clientData) {
+    document.getElementById("remerciement").textContent = `Merci ${clientData.prenom} ${clientData.nom} pour votre commande !`;
     const recapDiv = document.getElementById("recap");
-    if (produits && produits.length > 0) {
-      let html = `<h2>Détail de la commande :</h2>`;
-      html += `<ul class="produits-list">`;
-      produits.forEach(produit => {
+
+    recapDiv.innerHTML += `<p>Email : ${clientData.email}</p>`;
+    recapDiv.innerHTML += `<p>Adresse : ${adresseAffichee}</p>`;
+}
+
+// 📌 Afficher le récapitulatif des produits commandés
+const recapDiv = document.getElementById("recap");
+if (produits && produits.length > 0) {
+    let html = `<h2>Détail de la commande :</h2>`;
+    html += `<ul class="produits-list">`;
+    produits.forEach(produit => {
         html += `<li class="produit-item">
                     <img src="${produit.image}" alt="${produit.nom}" class="produit-img">
                     <div class="produit-details">
@@ -51,24 +53,55 @@
                       <p>Prix unitaire : ${parseFloat(produit.prix).toFixed(2)} €</p>
                     </div>
                  </li>`;
-      });
-      html += `</ul>`;
-      html += `<div class="delivery-info">
-                 <h3>Adresse de livraison :</h3>
-                 <p>${clientData.adresse}</p>
-               </div>`;
-      html += `<div class="total-info">
-                 <h3>Total payé :</h3>
-                 <p>${parseFloat(total).toFixed(2)} €</p>
-               </div>`;
-      html += `<div class="email-info">
-                 <h3>Email de confirmation envoyé à :</h3>
-                 <p>${clientData.email}</p>
-               </div>`;
-      recapDiv.innerHTML = html;
-    } else {
-      recapDiv.innerHTML = "<p>Aucune donnée de commande trouvée.</p>";
+    });
+    html += `</ul>`;
+    html += `<div class="delivery-info">
+                <h3>Mode de livraison :</h3>
+                <p>${adresseAffichee}</p>
+             </div>`;
+    html += `<div class="total-info">
+                <h3>Total payé :</h3>
+                <p>${parseFloat(total).toFixed(2)} €</p>
+             </div>`;
+    recapDiv.innerHTML = html;
+} else {
+    recapDiv.innerHTML = "<p>Aucune donnée de commande trouvée.</p>";
+}
+
+
+    document.addEventListener("DOMContentLoaded", () => {
+    const client = JSON.parse(sessionStorage.getItem("orderClient"));
+    const produits = JSON.parse(sessionStorage.getItem("orderProduits"));
+    const total = sessionStorage.getItem("orderTotal");
+    const transactionId = sessionStorage.getItem("orderTransactionId");
+
+    if (client) {
+        document.getElementById("remerciement").textContent = `Merci ${client.prenom} ${client.nom} pour votre commande !`;
+        document.getElementById("recap").innerHTML = `
+            <p>Email : ${client.email}</p>
+            <p>Adresse : ${client.adresse}</p>
+            <p>Transaction ID : <strong>${transactionId}</strong></p>
+            <h2>Détail de la commande :</h2>
+            <ul class="produits-list">
+                ${produits.map(p => `
+                    <li class="produit-item">
+                        <img src="${p.image}" alt="${p.nom}" class="produit-img">
+                        <div class="produit-details">
+                            <strong>${p.nom}</strong>
+                            <p>Quantité : ${p.quantite}</p>
+                            <p>Prix unitaire : ${parseFloat(p.prix).toFixed(2)} €</p>
+                        </div>
+                    </li>
+                `).join('')}
+            </ul>
+            <h3>Total payé : ${parseFloat(total).toFixed(2)} €</h3>
+        `;
     }
+});
+
+
+setTimeout(() => sessionStorage.clear(), 5000); // Efface après 5 sec
+
   </script>
 </body>
 </html>
