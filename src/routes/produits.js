@@ -40,6 +40,9 @@ router.post('/', upload.single("image"), (req, res) => {
         }
         sql = 'INSERT INTO produits (nom, description, prix, image_url, categorie, quantite) VALUES (?, ?, ?, ?, ?, ?)';
         params = [nom, description, prix, image_url, categorie, parseInt(quantite)];
+    } else if (categorie === "conference") {
+        sql = 'INSERT INTO produits (nom, description, image_url, categorie) VALUES (?, ?, ?, ?)';
+        params = [nom, description, image_url, categorie];
     } else {
         sql = 'INSERT INTO produits (nom, description, prix, lien_achat, image_url, categorie) VALUES (?, ?, ?, ?, ?, ?)';
         params = [nom, description, prix, lien_achat, image_url, categorie];
@@ -53,6 +56,7 @@ router.post('/', upload.single("image"), (req, res) => {
         res.json({ message: "Produit ajouté", id: result.insertId });
     });
 });
+
 
 
 // Modifier un produit

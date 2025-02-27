@@ -101,6 +101,8 @@ body {
 .tile.health { background-color: #4caf50; }
 .tile.books { background-color: #ff9800; }
 .tile.sprays { background-color: #d81b60; }
+.tile.conferences { background-color: #0077b6; }
+
 
 .produits-section {
   padding: 80px 20px 30px;
@@ -538,4 +540,133 @@ input[type="checkbox"] {
 
 .btn-commander:hover {
   background: #0056b3;
+}
+
+.conferences-section {
+  padding-top: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  flex-direction: column;
+}
+
+.conferences-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px;
+  max-width: 800px;
+}
+
+.conference-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  width: 100%;
+  max-width: 300px;
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.conference-card:hover {
+  transform: scale(1.05);
+}
+
+.conference-card img {
+  width: 100%;
+  height: auto;
+  max-height: 500px;
+  object-fit: contain;
+}
+
+.conference-card .content {
+  padding: 15px;
+}
+
+.conference-card h3 {
+  font-size: 18px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.conference-card p {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 15px;
+}
+
+.conference-card .btn-preinscription {
+  background: #0077b6;
+  color: white;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background 0.3s;
+}
+
+.conference-card .btn-preinscription:hover {
+  background: #005b8e;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 300px;
+  text-align: center;
+  position: relative;
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 24px;
+  cursor: pointer;
+  color: black;
+}
+
+.modal form {
+  display: flex;
+  flex-direction: column;
+}
+
+.modal form label {
+  margin: 10px 0 5px;
+}
+
+.modal form input {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.modal form .btn-submit {
+  background: #0077b6;
+  color: white;
+  padding: 10px;
+  margin-top: 10px;
+  border: none;
+  cursor: pointer;
+}
+
+.modal form .btn-submit:hover {
+  background: #005b8e;
 }

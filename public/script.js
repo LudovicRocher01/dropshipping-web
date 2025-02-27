@@ -1,5 +1,14 @@
+function getCurrentPage() {
+    const path = window.location.pathname;
+    if (path.includes("health_products.html")) return "sante";
+    if (path.includes("books.html")) return "livre";
+    if (path.includes("sprays.html")) return "spray";
+    if (path.includes("conferences.html")) return "conference";
+    return "accueil";
+}
+
 function getActionButton(produit) {
-    if (produit.categorie === "livre") {
+    if (produit.categorie === "livre" || produit.categorie === "sante") {
         return `<a href="${produit.lien_achat}" target="_blank">
                     <i class="material-icons">add_shopping_cart</i>
                 </a>`;
@@ -271,19 +280,105 @@ function validerPanier() {
     window.location.href = paiementPath;
 }
 
+async function chargerConferences() {
+    try {
+        const response = await fetch('/api/produits');
+        const produits = await response.json();
+
+        const conferences = produits.filter(prod => prod.categorie === "conference");
+
+        const container = document.getElementById("conferences-container");
+        container.innerHTML = "";
+
+        if (conferences.length === 0) {
+            container.innerHTML = "<p>Aucune conférence disponible.</p>";
+            return;
+        }
+
+        conferences.forEach(conference => {
+            const div = document.createElement("div");
+            div.classList.add("conference-card");
+
+            div.innerHTML = `
+                <img src="${conference.image_url}" alt="${conference.nom}">
+                <div class="content">
+                    <h3>${conference.nom}</h3>
+                    <p>${conference.description}</p>
+                    <button class="btn-preinscription" onclick="ouvrirModal(${conference.id})">Pré-inscription</button>
+                </div>
+            `;
+
+            container.appendChild(div);
+        });
+
+    } catch (error) {
+        console.error("Erreur lors du chargement des conférences :", error);
+    }
+}
+
+function initialiserPreinscription() {
+    document.getElementById("preinscription-modal").addEventListener("click", fermerModal);
+
+    document.getElementById("preinscription-form").addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        const conferenceId = document.getElementById("conference_id").value;
+        const nom = document.getElementById("nom").value;
+        const prenom = document.getElementById("prenom").value;
+        const email = document.getElementById("email").value;
+        const telephone = document.getElementById("telephone").value;
+
+        try {
+            const response = await fetch("/api/formulaires", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ nom, prenom, email, telephone, conference_id: conferenceId })
+            });
+
+            const result = await response.json();
+            showToast("Pré-inscription enregistrée avec succès !");
+            fermerModal();
+        } catch (error) {
+            console.error("Erreur lors de l'envoi :", error);
+        }
+    });
+
+    document.addEventListener("keydown", function(event) {
+        if (event.key === "Escape") {
+            fermerModal();
+        }
+    });
+}
+
+function ouvrirModal(conferenceId) {
+    document.getElementById("preinscription-modal").style.display = "flex";
+    document.getElementById("conference_id").value = conferenceId;
+}
+
+function fermerModal(event) {
+    const modal = document.getElementById("preinscription-modal");
+
+    if (!event || event.target === modal) {
+        modal.style.display = "none";
+    }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
-    afficherPanier();
-    mettreAJourBadgePanier();
+    const page = getCurrentPage();
+
+    if (page === "sante" || page === "livre" || page === "spray") {
+        afficherProduits(page);
+    } 
+    else if (page === "conference") {
+        chargerConferences();
+        initialiserPreinscription();
+    }
 
     const btnCommander = document.getElementById("validerPanier");
     if (btnCommander) {
         btnCommander.addEventListener("click", validerPanier);
-    } else {
-        console.error("❌ Erreur : Bouton 'Commander' introuvable !");
     }
-});
 
-document.addEventListener("DOMContentLoaded", () => {
     const retraitCheckbox = document.getElementById("retraitMagasin");
     if (retraitCheckbox) {
         retraitCheckbox.addEventListener("change", () => {
@@ -294,14 +389,12 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 document.addEventListener("DOMContentLoaded", () => {
-    mettreAJourBadgePanier();
-
-    if (window.location.pathname.includes("health_products.html")) {
-        afficherProduits("sante");
-    } else if (window.location.pathname.includes("books.html")) {
-        afficherProduits("livre");
-    } else if (window.location.pathname.includes("sprays.html")) {
-        afficherProduits("spray");
+    const retraitCheckbox = document.getElementById("retraitMagasin");
+    if (retraitCheckbox) {
+        retraitCheckbox.addEventListener("change", () => {
+            sessionStorage.setItem("retraitMagasin", retraitCheckbox.checked.toString());
+            afficherPanier();
+        });
     }
 });
 

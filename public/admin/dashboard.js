@@ -35,7 +35,7 @@ async function chargerProduits() {
         produits.forEach(produit => {
             const row = document.createElement("tr");
             const imageUrl = produit.image_url ? produit.image_url : "images/no-image.png";
-            
+
             row.innerHTML = `
                 <td>${produit.id}</td>
                 <td>
@@ -43,23 +43,30 @@ async function chargerProduits() {
                     <button onclick="toggleFileInput(${produit.id})">Changer d'image</button>
                     <input type="file" id="image-${produit.id}" data-current-image="${produit.image_url}" style="display: none;">
                 </td>
-                <td><input type="text" value="${produit.categorie}" disabled></td> <!-- Catégorie non modifiable -->
+                <td><input type="text" value="${produit.categorie}" disabled></td>
                 <td><input type="text" value="${produit.nom}" id="nom-${produit.id}"></td>
                 <td><input type="text" value="${produit.description}" id="desc-${produit.id}"></td>
-                <td><input type="number" step="0.01" value="${produit.prix}" id="prix-${produit.id}"></td>
-                <td><input type="text" value="${produit.lien_achat}" id="lien-${produit.id}" ${produit.categorie === "spray" ? 'style="display:none;"' : ''}></td>
                 <td>
-                    ${produit.categorie === "spray" 
-                    ? `<input type="number" value="${produit.quantite}" id="quantite-${produit.id}" min="0">` 
-                    : ''}
+                    ${produit.categorie === "conference" 
+                    ? "-" 
+                    : `<input type="number" step="0.01" value="${produit.prix}" id="prix-${produit.id}">`}
                 </td>
-
+                <td>
+                    ${produit.categorie === "spray" || produit.categorie === "conference"
+                    ? "-"
+                    : `<input type="text" value="${produit.lien_achat}" id="lien-${produit.id}">`}
+                </td>
+                <td>
+                    ${produit.categorie === "spray"
+                    ? `<input type="number" value="${produit.quantite}" id="quantite-${produit.id}" min="0">`
+                    : "-"}
+                </td>
                 <td>
                     <button onclick="modifierProduit(${produit.id})">Modifier</button>
                     <button onclick="supprimerProduit(${produit.id})" style="color:red;">Supprimer</button>
                 </td>
             `;
-        
+
             document.getElementById("produits-table").appendChild(row);
         });
         
@@ -67,6 +74,8 @@ async function chargerProduits() {
         console.error("Erreur lors du chargement des produits :", error);
     }
 }
+
+
 
 function toggleFileInput(id) {
     const fileInput = document.getElementById(`image-${id}`);
@@ -128,14 +137,21 @@ async function supprimerProduit(id) {
 document.getElementById("add-product-form").addEventListener("submit", async function (event) {
     event.preventDefault();
 
+    const selectedCategory = document.getElementById("categorie").value;
     const formData = new FormData();
     formData.append("nom", document.getElementById("nom").value);
     formData.append("description", document.getElementById("description").value);
-    formData.append("prix", document.getElementById("prix").value);
-    formData.append("lien_achat", document.getElementById("lien_achat").value);
-    formData.append("categorie", document.getElementById("categorie").value);
     formData.append("image", document.getElementById("image").files[0]);
-    formData.append("quantite", document.getElementById("quantite").value);
+    formData.append("categorie", selectedCategory);
+
+    if (selectedCategory !== "conference") {
+        formData.append("prix", document.getElementById("prix").value);
+        formData.append("lien_achat", document.getElementById("lien_achat").value);
+    }
+
+    if (selectedCategory === "spray") {
+        formData.append("quantite", document.getElementById("quantite").value);
+    }
 
     try {
         const response = await fetch("/api/produits", {
@@ -154,6 +170,7 @@ document.getElementById("add-product-form").addEventListener("submit", async fun
         console.error("Erreur lors de l'ajout du produit :", error);
     }
 });
+
 
 async function chargerCommandes() {
     try {
@@ -225,7 +242,85 @@ async function chargerShippingFee() {
         console.error("Erreur lors du chargement des frais de port :", error);
     }
 }
-  
+
+function mettreAJourFormulaire() {
+    const selectedCategory = document.getElementById('categorie').value;
+    const priceField = document.getElementById('price-field');
+    const linkField = document.getElementById('link-field');
+    const quantiteField = document.getElementById('quantite-field');
+
+    if (selectedCategory === 'spray') {
+        linkField.style.display = 'none';
+        quantiteField.style.display = 'block';
+        priceField.style.display = 'block';
+    } else if (selectedCategory === 'conference') {
+        linkField.style.display = 'none';
+        quantiteField.style.display = 'none';
+        priceField.style.display = 'none';
+    } else {
+        linkField.style.display = 'block';
+        quantiteField.style.display = 'none';
+        priceField.style.display = 'block';
+    }
+}
+
+async function chargerPreinscriptions(conferenceId = "") {
+    try {
+        const response = await fetch("/api/formulaires");
+        let preinscriptions = await response.json();
+
+        if (conferenceId) {
+            preinscriptions = preinscriptions.filter(p => p.conference_id == conferenceId);
+        }
+
+        const tableBody = document.getElementById("preinscriptions-table");
+        tableBody.innerHTML = "";
+
+        preinscriptions.forEach(preinscrit => {
+            const row = document.createElement("tr");
+
+            row.innerHTML = `
+                <td>${preinscrit.nom}</td>
+                <td>${preinscrit.prenom}</td>
+                <td>${preinscrit.email}</td>
+                <td>${preinscrit.telephone}</td>
+                <td>${preinscrit.conference_nom}</td>
+                <td>${new Date(preinscrit.date_inscription).toLocaleString()}</td>
+            <td><button onclick="supprimerPreinscription(${preinscrit.id})" style="color:red;">🗑️ Supprimer</button></td>            `;
+
+            tableBody.appendChild(row);
+        });
+    } catch (error) {
+        console.error("Erreur lors du chargement :", error);
+    }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    chargerPreinscriptions();
+});
+
+async function supprimerPreinscription(id) {
+    if (!confirm("Êtes-vous sûr de vouloir supprimer cette personne de la conférence ?")) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/formulaires/${id}`, {
+            method: "DELETE"
+        });
+
+        if (!response.ok) {
+            throw new Error("Erreur lors de la suppression");
+        }
+
+        alert("Pré-inscription supprimée avec succès !");
+        chargerPreinscriptions()
+    } catch (error) {
+        console.error("Erreur lors de la suppression :", error);
+    }
+}
+
+
 verifierAuth();
 chargerProduits();
 chargerShippingFee();
@@ -242,6 +337,16 @@ document.getElementById("show-orders").addEventListener("click", function () {
         chargerCommandes();
     }
 });
+
+document.getElementById("show-preinscriptions").addEventListener("click", function () {
+    const section = document.getElementById("preinscriptions-section");
+    section.style.display = section.style.display === "none" ? "block" : "none";
+
+    if (section.style.display === "block") {
+        chargerPreinscriptions();
+    }
+});
+
 
 document.getElementById("update-shipping").addEventListener("click", async () => {
     const newFee = document.getElementById("shipping_fee").value;
@@ -261,16 +366,8 @@ document.getElementById("update-shipping").addEventListener("click", async () =>
     }
   });
   
-document.getElementById('categorie').addEventListener('change', function() {
-    const selectedCategory = this.value;
-    const linkField = document.getElementById('link-field');
-    const quantiteField = document.getElementById('quantite-field');
-
-    if (selectedCategory === 'spray') {
-        linkField.style.display = 'none';
-        quantiteField.style.display = 'block';
-    } else {
-        linkField.style.display = 'block';
-        quantiteField.style.display = 'none';
-    }
+  document.addEventListener("DOMContentLoaded", function () {
+    mettreAJourFormulaire();
 });
+
+document.getElementById('categorie').addEventListener('change', mettreAJourFormulaire);

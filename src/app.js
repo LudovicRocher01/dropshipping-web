@@ -18,6 +18,8 @@ app.use('/api/order', require('./routes/order'));
 app.use('/api/commande', require('./routes/commande'));
 app.use('/api/commandes', require('./routes/commandes'));
 app.use('/api/settings', require('./routes/settings'));
+app.use('/api/formulaires', require('./routes/formulaires'));
+
 
 app.listen(PORT, () => {
     console.log(`Serveur lancé sur http://localhost:${PORT}`);

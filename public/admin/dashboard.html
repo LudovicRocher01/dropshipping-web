@@ -42,19 +42,26 @@
                 <option value="sante">Santé</option>
                 <option value="livre">Livre</option>
                 <option value="spray">Spray</option>
+                <option value="conference">Conférence</option>
             </select>
             <input type="text" id="nom" placeholder="Nom du produit" required>
-            <input type="text" id="description" placeholder="Description">
-            <input type="number" id="prix" placeholder="Prix" step="0.01" required>
+            <input type="text" id="description" placeholder="Description" required>
+            <input type="file" id="image" accept="image/*" required>
+        
+            <div id="price-field">
+                <input type="number" id="prix" placeholder="Prix" step="0.01">
+            </div>
             <div id="link-field">
                 <input type="text" id="lien_achat" placeholder="Lien d'achat">
             </div>
-            <input type="file" id="image" accept="image/*" required>
-            <div id="quantite-field" style="display:none;">
+            <div id="quantite-field">
                 <input type="number" id="quantite" placeholder="Quantité" min="0">
             </div>
+        
             <button type="submit">Ajouter Produit</button>
         </form>
+        
+        
         
         
         <button id="show-orders">Voir les Commandes</button>
@@ -75,11 +82,27 @@
         </thead>
         <tbody id="commandes-table"></tbody>
     </table>
-    
 </div>
 
+<button id="show-preinscriptions">Voir les pré-inscriptions</button>
 
-    </div>
+<div id="preinscriptions-section" style="display: none;">
+    <h3>Liste des Pré-inscriptions</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Prénom</th>
+                <th>Email</th>
+                <th>Téléphone</th>
+                <th>Conférence</th>
+                <th>Date d'inscription</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="preinscriptions-table"></tbody>
+    </table>
+</div>
 
     <script src="dashboard.js"></script>
 </body>
