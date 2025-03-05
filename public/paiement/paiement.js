@@ -67,13 +67,26 @@ async function lancerPaiement() {
     let totalAmountGlobal = panier.reduce((total, prod) => total + prod.prix * prod.quantite, 0) + shippingFee;
 
     paypal.Buttons({
-        createOrder: function (data, actions) {
-            return actions.order.create({
-                purchase_units: [{
-                    amount: { value: totalAmountGlobal.toFixed(2) }
-                }]
-            });
+        createOrder: async function (data, actions) {
+            try {
+                const response = await fetch("/api/paypal/order", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ total: totalAmountGlobal })
+                });
+        
+                const data = await response.json();
+                if (!data.orderID) {
+                    throw new Error("Impossible de récupérer un Order ID PayPal");
+                }
+                
+                return data.orderID;
+            } catch (error) {
+                console.error("❌ Erreur lors de la création de l'ordre PayPal :", error);
+                alert("Erreur lors du paiement. Veuillez réessayer.");
+            }
         },
+        
         onApprove: function (data, actions) {
             return actions.order.capture().then(function (details) {
 

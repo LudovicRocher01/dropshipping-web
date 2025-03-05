@@ -4,3 +4,7 @@ uploads/
 *.log
 dist/
 tmp/
+server.key
+server.crt
+access.log
+error.log
