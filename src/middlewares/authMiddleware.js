@@ -1,8 +1,5 @@
 const jwt = require("jsonwebtoken");
 
-/**
- * Middleware pour vérifier l'admin
- */
 exports.verifierAdmin = (req, res, next) => {
     const token = req.cookies.authToken || req.headers.authorization?.split(" ")[1];
 

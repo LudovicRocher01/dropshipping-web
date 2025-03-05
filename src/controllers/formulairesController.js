@@ -1,9 +1,6 @@
 const db = require('../models/db');
 const validator = require("validator");
 
-/**
- * Récupérer toutes les pré-inscriptions (Admin uniquement)
- */
 exports.getFormulaires = (req, res) => {
     db.query(`
         SELECT f.*, p.nom AS conference_nom
@@ -19,9 +16,6 @@ exports.getFormulaires = (req, res) => {
     });
 };
 
-/**
- * Récupérer les pré-inscriptions pour une conférence spécifique (Admin uniquement)
- */
 exports.getFormulairesByConference = (req, res) => {
     const { conference_id } = req.params;
     db.query(
@@ -37,9 +31,6 @@ exports.getFormulairesByConference = (req, res) => {
     );
 };
 
-/**
- * Ajouter une pré-inscription (Accessible aux visiteurs ✅)
- */
 exports.addFormulaire = (req, res) => {
     let { nom, prenom, email, telephone, conference_id } = req.body;
 
@@ -73,9 +64,6 @@ exports.addFormulaire = (req, res) => {
     });
 };
 
-/**
- * Supprimer une pré-inscription (Admin uniquement)
- */
 exports.deleteFormulaire = (req, res) => {
     const { id } = req.params;
 

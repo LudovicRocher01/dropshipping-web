@@ -20,7 +20,6 @@ exports.submitCommande = async (req, res) => {
         const orderDetails = JSON.stringify(produits);
         const telephone = client.telephone || "Non renseigné";
 
-        // Insérer la commande
         const sqlCommande = `
             INSERT INTO commandes (prenom, nom, email, adresse, telephone, total, transaction_id, order_details) 
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
@@ -32,7 +31,7 @@ exports.submitCommande = async (req, res) => {
                 return res.status(500).json({ error: "Erreur serveur lors de l'enregistrement de la commande" });
             }
 
-            const orderId = result.insertId; // Récupérer l'ID de la commande insérée
+            const orderId = result.insertId;
             let erreursStock = [];
 
             produits.forEach((item, index) => {
@@ -52,14 +51,12 @@ exports.submitCommande = async (req, res) => {
                     }
 
                     if (erreursStock.length === 0) {
-                        // Mettre à jour le stock
                         db.query('UPDATE produits SET quantite = quantite - ? WHERE id = ?', [item.quantite, item.id], (err) => {
                             if (err) {
                                 console.error(`Erreur lors de la mise à jour du stock pour ${item.nom} :`, err);
                             }
                         });
 
-                        // Si c'est le dernier produit, envoyer les emails au client et au vendeur
                         if (index === produits.length - 1) {
                             Promise.all([
                                 envoyerConfirmationCommande(client, produits, total, transactionId),

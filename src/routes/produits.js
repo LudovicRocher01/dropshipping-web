@@ -34,7 +34,6 @@ const upload = multer({
     limits: { fileSize: 2 * 1024 * 1024 }
 });
 
-// Routes des produits
 router.get('/', limiter, getProduits);
 router.post('/', verifierAdmin, limiter, upload.single("image"), addProduit);
 router.put('/:id', verifierAdmin, limiter, upload.single("image"), updateProduit);

@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", async() => {
     if (client) {
         document.getElementById("remerciement").textContent = `Merci ${client.prenom} ${client.nom} pour votre commande !`;
         document.getElementById("recap").innerHTML = `
-            <p>Un email de confirmation a été envoyé à l'adresse suivante : ${client.email}</p><br>
+            <p>Un email de confirmation a été envoyé à l'adresse mail suivante : ${client.email}</p><br>
             <p>Adresse : ${client.adresse}</p> <br>
             <p>Transaction ID : <strong>${transactionId}</strong></p> <br>
             <h2>Détail de la commande :</h2>

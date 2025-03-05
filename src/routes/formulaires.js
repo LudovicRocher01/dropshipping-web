@@ -4,7 +4,6 @@ const { getFormulaires, getFormulairesByConference, addFormulaire, deleteFormula
 const { verifierAdmin } = require('../middlewares/authMiddleware');
 const rateLimit = require("express-rate-limit");
 
-// ✅ Protection contre le spam d'inscriptions
 const inscriptionLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 5,

@@ -10,7 +10,6 @@ const limiter = rateLimit({
     message: { error: "Trop de requêtes, veuillez réessayer plus tard." }
 });
 
-// Routes des paramètres
 router.get('/:key', verifierAdmin, limiter, getSetting);
 router.put('/:key', verifierAdmin, limiter, updateSetting);
 

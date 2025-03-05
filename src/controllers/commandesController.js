@@ -1,10 +1,7 @@
 const db = require('../models/db');
 
-/**
- * Récupérer toutes les commandes
- */
 exports.getCommandes = (req, res) => {
-    db.query('SELECT transaction_id, nom, prenom, email, adresse, total, order_details, created_at FROM commandes', (err, results) => {
+    db.query('SELECT id, transaction_id, nom, prenom, email, adresse, total, order_details, created_at FROM commandes', (err, results) => {
         if (err) {
             console.error('Erreur lors de la récupération des commandes :', err);
             return res.status(500).json({ error: 'Erreur serveur' });
@@ -13,12 +10,8 @@ exports.getCommandes = (req, res) => {
     });
 };
 
-/**
- * Supprimer une commande
- */
 exports.deleteCommande = (req, res) => {
     const commandeId = req.params.id;
-
     if (!/^\d+$/.test(commandeId)) {
         return res.status(400).json({ error: "ID invalide." });
     }

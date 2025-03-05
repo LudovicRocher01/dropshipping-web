@@ -1,9 +1,6 @@
 const db = require('../models/db');
 const validator = require("validator");
 
-/**
- * 🔹 Récupérer tous les produits
- */
 exports.getProduits = (req, res) => {
     db.query('SELECT * FROM produits', (err, results) => {
         if (err) {
@@ -14,9 +11,6 @@ exports.getProduits = (req, res) => {
     });
 };
 
-/**
- * 🔹 Ajouter un produit
- */
 exports.addProduit = (req, res) => {
     const { nom, description, prix, lien_achat, categorie, quantite } = req.body;
     const image_url = req.file ? `/uploads/${req.file.filename}` : null;
@@ -45,8 +39,8 @@ exports.addProduit = (req, res) => {
         sql = 'INSERT INTO produits (nom, description, image_url, categorie) VALUES (?, ?, ?, ?)';
         params = [nom, description, image_url, categorie];
     } else {
-        sql = 'INSERT INTO produits (nom, description, prix, lien_achat, image_url, categorie) VALUES (?, ?, ?, ?, ?, ?)';
-        params = [nom, description, prix, lien_achat, image_url, categorie];
+        sql = 'INSERT INTO produits (nom, description, lien_achat, image_url, categorie) VALUES (?, ?, ?, ?, ?)';
+        params = [nom, description, lien_achat, image_url, categorie];
     }
 
     db.query(sql, params, (err, result) => {
@@ -58,9 +52,6 @@ exports.addProduit = (req, res) => {
     });
 };
 
-/**
- * 🔹 Modifier un produit
- */
 exports.updateProduit = (req, res) => {
     const { nom, description, prix, lien_achat, quantite } = req.body;
     const { id } = req.params;
@@ -97,9 +88,6 @@ exports.updateProduit = (req, res) => {
     });
 };
 
-/**
- * 🔹 Supprimer un produit
- */
 exports.deleteProduit = (req, res) => {
     const { id } = req.params;
 

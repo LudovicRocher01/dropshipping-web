@@ -1,8 +1,5 @@
 const db = require('../models/db');
 
-/**
- * 🔹 Récupérer un paramètre par clé
- */
 exports.getSetting = (req, res) => {
   const key = req.params.key;
   
@@ -18,9 +15,6 @@ exports.getSetting = (req, res) => {
   });
 };
 
-/**
- * 🔹 Mettre à jour un paramètre
- */
 exports.updateSetting = (req, res) => {
   const key = req.params.key;
   const { setting_value } = req.body;

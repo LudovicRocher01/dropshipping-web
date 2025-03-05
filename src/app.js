@@ -1,4 +1,4 @@
-require('dotenv').config(); // charge les variables d'env
+require('dotenv').config();
 
 const express = require('express');
 const path = require('path');
@@ -13,6 +13,13 @@ const PORT = 3000;
 app.use(express.static(path.join(__dirname, '../public')));
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
+app.use((req, res, next) => {
+    const log = `${new Date().toISOString()} - ${req.method} ${req.url} - IP: ${req.ip}\n`;
+    logStream.write(log);
+    console.log(log);
+    next();
+});
+
 app.use(express.json());
 app.use(cookieParser());
 
@@ -26,11 +33,8 @@ app.use('/api/commandes', require('./routes/commandes'));
 app.use('/api/settings', require('./routes/settings'));
 app.use('/api/formulaires', require('./routes/formulaires'));
 
-app.use((req, res, next) => {
-    const log = `${new Date().toISOString()} - ${req.method} ${req.url} - IP: ${req.ip}\n`;
-    logStream.write(log);
-    console.log(log);
-    next();
+app.use((req, res) => {
+    res.status(404).send("404 - Page non trouvée !");
 });
 
 app.listen(PORT, () => {

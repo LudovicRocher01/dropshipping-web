@@ -76,6 +76,9 @@ async function lancerPaiement() {
         },
         onApprove: function (data, actions) {
             return actions.order.capture().then(function (details) {
+
+                document.getElementById("loading-overlay").style.display = "flex";
+
                 const adresseFinale = retraitMagasin ? "Retrait au cabinet" :
                     `${details.purchase_units[0].shipping?.address.address_line_1}, ${details.purchase_units[0].shipping.address.admin_area_2}, ${details.purchase_units[0].shipping.address.postal_code}`;
 
@@ -107,13 +110,22 @@ async function lancerPaiement() {
                 .then(data => {
                     sessionStorage.setItem("orderId", data.orderId);
                     localStorage.removeItem("panier");
-                    window.location.href = "../recap/recap-commande.html";
+
+                    setTimeout(() => {
+                        window.location.href = "../recap/recap-commande.html";
+                    }, 1000);
                 })
-                .catch(err => console.error("Erreur enregistrement commande :", err));
+                .catch(err => {
+                    console.error("Erreur enregistrement commande :", err);
+
+                    document.getElementById("loading-overlay").style.display = "none";
+                    alert("Une erreur s'est produite lors du paiement. Veuillez réessayer.");
+                });
             });
         }
     }).render('#paypal-button-container');
 }
+
 
 
 document.addEventListener("DOMContentLoaded", () => {

@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const { envoyerConfirmationCommande, notifierVendeur } = require('../controllers/mailController');
 
-// Route pour tester l'envoi d'un email de confirmation (exemple)
 router.post('/confirm', async (req, res) => {
     try {
         const { client, produits, total, transactionId } = req.body;
@@ -14,7 +13,6 @@ router.post('/confirm', async (req, res) => {
     }
 });
 
-// Route pour tester l'envoi d'un email au vendeur (exemple)
 router.post('/notify', async (req, res) => {
     try {
         const { client, produits, total, transactionId } = req.body;

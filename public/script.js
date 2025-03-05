@@ -30,7 +30,7 @@ async function afficherProduits(categorie) {
         container.innerHTML = "";
 
         if (produitsFiltres.length === 0) {
-            container.innerHTML = "<p>Aucun produit trouvé.</p>";
+            container.innerHTML = "<p class='tile'>Aucun produit disponible.</p>";
             return;
         }
         produitsFiltres.forEach(produit => {
@@ -51,6 +51,10 @@ async function afficherProduits(categorie) {
                 ? `<div class="rupture-label">Rupture de stock</div>`
                 : '';
 
+            const prixDisplay = produit.categorie === "spray" 
+                ? `<p>${produit.prix}€</p>` 
+                : '';
+
             wrapper.innerHTML = `
                 <div class="container">
                     <div class="top product-img" style="background-image: url('${produit.image_url}')">
@@ -60,7 +64,7 @@ async function afficherProduits(categorie) {
                         <div class="left">
                             <div class="details">
                                 <h1>${produit.nom}</h1>
-                                <p>${produit.prix}€</p>
+                                ${prixDisplay}
                                 ${quantiteDisplay}
                             </div>
                             <div class="buy">${actionButton}</div>
@@ -311,7 +315,7 @@ async function chargerConferences() {
         container.innerHTML = "";
 
         if (conferences.length === 0) {
-            container.innerHTML = "<p>Aucune conférence disponible.</p>";
+            container.innerHTML = "<p class='tile'>Aucune conférence disponible.</p>";
             return;
         }
 
@@ -341,34 +345,42 @@ function initialiserPreinscription() {
 
     document.getElementById("preinscription-form").addEventListener("submit", async function (event) {
         event.preventDefault();
-
+    
         const conferenceId = document.getElementById("conference_id").value;
         const nom = document.getElementById("nom").value;
         const prenom = document.getElementById("prenom").value;
         const email = document.getElementById("email").value;
         const telephone = document.getElementById("telephone").value;
-
+    
         try {
             const response = await fetch("/api/formulaires", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ nom, prenom, email, telephone, conference_id: conferenceId })
             });
-
+    
             const result = await response.json();
-            showToast("Pré-inscription enregistrée avec succès !");
+    
+            if (!response.ok) {
+                throw new Error(result.error || "Une erreur est survenue.");
+            }
+    
+            // ✅ Afficher la boîte de confirmation
+            document.getElementById("confirmation-message").textContent = "🎉 Pré-inscription enregistrée avec succès !";
+            document.getElementById("confirmation-modal").style.display = "block";
+            
             fermerModal();
         } catch (error) {
             console.error("Erreur lors de l'envoi :", error);
+            showToast(`❌ ${error.message}`);
         }
     });
-
-    document.addEventListener("keydown", function(event) {
-        if (event.key === "Escape") {
-            fermerModal();
-        }
+    
+    // ✅ Fermer la boîte de confirmation en cliquant sur "OK"
+    document.getElementById("close-confirmation").addEventListener("click", function () {
+        document.getElementById("confirmation-modal").style.display = "none";
     });
-}
+}    
 
 function ouvrirModal(conferenceId) {
     document.getElementById("preinscription-modal").style.display = "flex";

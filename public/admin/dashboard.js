@@ -47,9 +47,9 @@ async function chargerProduits() {
                 <td><input type="text" value="${produit.nom}" id="nom-${produit.id}"></td>
                 <td><input type="text" value="${produit.description}" id="desc-${produit.id}"></td>
                 <td>
-                    ${produit.categorie === "conference" 
-                    ? "-" 
-                    : `<input type="number" step="0.01" value="${produit.prix}" id="prix-${produit.id}">`}
+                    ${produit.categorie === "spray" 
+                    ? `<input type="number" step="0.01" value="${produit.prix}" id="prix-${produit.id}">`
+                    : "-"}
                 </td>
                 <td>
                     ${produit.categorie === "spray" || produit.categorie === "conference"
@@ -166,6 +166,7 @@ document.getElementById("add-product-form").addEventListener("submit", async fun
         alert("Produit ajouté !");
         chargerProduits();
         document.getElementById("add-product-form").reset();
+        mettreAJourFormulaire();
     } catch (error) {
         console.error("Erreur lors de l'ajout du produit :", error);
     }
@@ -238,11 +239,16 @@ async function supprimerCommande(id) {
             method: "DELETE"
         });
         const data = await response.json();
-        alert(data.message);
+
+        if (!response.ok) {
+            throw new Error(data.error || "Erreur inconnue");
+        }
+
+        alert(data.message || "Commande archivée !");
         chargerCommandes();
     } catch (error) {
-        console.error("Erreur lors de la suppression de la commande :", error);
-        alert("Une erreur est survenue lors de la suppression de la commande.");
+        console.error("Erreur lors de l'archivage :", error);
+        alert("Erreur lors de l'archivage de la commande.");
     }
 }
 
@@ -275,7 +281,7 @@ function mettreAJourFormulaire() {
     } else {
         linkField.style.display = 'block';
         quantiteField.style.display = 'none';
-        priceField.style.display = 'block';
+        priceField.style.display = 'none';
     }
 }
 
