@@ -107,7 +107,7 @@ async function lancerPaiement() {
                 .then(data => {
                     sessionStorage.setItem("orderId", data.orderId);
                     localStorage.removeItem("panier");
-                    window.location.href = "recap/recap-commande.html";
+                    window.location.href = "../recap/recap-commande.html";
                 })
                 .catch(err => console.error("Erreur enregistrement commande :", err));
             });

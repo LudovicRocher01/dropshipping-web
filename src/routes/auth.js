@@ -1,41 +1,18 @@
 const express = require("express");
 const router = express.Router();
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-require("dotenv").config();
+const rateLimit = require("express-rate-limit");
+const { login, verifyToken, verifierAdmin } = require("../controllers/authController");
 
-router.post("/login", async (req, res) => {
-    const { password } = req.body;
-
-    if (!password) {
-        return res.status(400).json({ error: "Mot de passe requis" });
-    }
-
-    const hashedPassword = process.env.ADMIN_PASSWORD_HASH;
-
-    const match = await bcrypt.compare(password, hashedPassword);
-    if (!match) {
-        return res.status(401).json({ error: "Mot de passe incorrect" });
-    }
-
-    const token = jwt.sign({ role: "admin" }, process.env.JWT_SECRET, { expiresIn: "1h" });
-
-    res.json({ message: "Connexion réussie", token });
+// 🔹 Protection brute-force
+const loginLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 5,
+    message: { error: "Trop de tentatives, veuillez réessayer plus tard." },
+    headers: true,
 });
 
-router.post("/verify", (req, res) => {
-    const token = req.headers.authorization?.split(" ")[1];
+// Routes
+router.post("/login", loginLimiter, login);
+router.post("/verify", verifyToken);
 
-    if (!token) {
-        return res.status(401).json({ error: "Accès refusé" });
-    }
-
-    try {
-        jwt.verify(token, process.env.JWT_SECRET);
-        res.json({ message: "Token valide" });
-    } catch (err) {
-        res.status(403).json({ error: "Token invalide" });
-    }
-});
-
-module.exports = router;
+module.exports = { router, verifierAdmin };

@@ -1,8 +1,16 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../models/db');
 const multer = require('multer');
 const path = require('path');
+const { verifierAdmin } = require('../routes/auth');
+const { getProduits, addProduit, updateProduit, deleteProduit } = require('../controllers/produitController');
+const rateLimit = require("express-rate-limit");
+
+const limiter = rateLimit({
+    windowMs: 10 * 60 * 1000,
+    max: 20,
+    message: { error: "Trop de requêtes, veuillez réessayer plus tard." }
+});
 
 const storage = multer.diskStorage({
     destination: "uploads/",
@@ -10,102 +18,27 @@ const storage = multer.diskStorage({
         cb(null, Date.now() + path.extname(file.originalname));
     }
 });
-const upload = multer({ storage: storage });
 
-// Récupérer les produits
-router.get('/', (req, res) => {
-    db.query('SELECT * FROM produits', (err, results) => {
-        if (err) {
-            console.error('Erreur lors de la récupération des produits:', err);
-            return res.status(500).json({ error: 'Erreur serveur' });
-        }
-        res.json(results);
-    });
-});
-
-// Ajouter un produit
-router.post('/', upload.single("image"), (req, res) => {
-    const { nom, description, prix, lien_achat, categorie, quantite } = req.body;
-    const image_url = req.file ? `/uploads/${req.file.filename}` : null;
-
-    if (!nom || !categorie || !image_url) {
-        return res.status(400).json({ error: "Nom, image et catégorie obligatoires" });
-    }
-
-    let sql, params;
-
-    if (categorie === "spray") {
-        if (!quantite || isNaN(quantite)) {
-            return res.status(400).json({ error: "Quantité requise pour les sprays" });
-        }
-        sql = 'INSERT INTO produits (nom, description, prix, image_url, categorie, quantite) VALUES (?, ?, ?, ?, ?, ?)';
-        params = [nom, description, prix, image_url, categorie, parseInt(quantite)];
-    } else if (categorie === "conference") {
-        sql = 'INSERT INTO produits (nom, description, image_url, categorie) VALUES (?, ?, ?, ?)';
-        params = [nom, description, image_url, categorie];
+const fileFilter = (req, file, cb) => {
+    const allowedMimeTypes = ["image/jpeg", "image/png", "image/gif"];
+    if (allowedMimeTypes.includes(file.mimetype)) {
+        cb(null, true);
     } else {
-        sql = 'INSERT INTO produits (nom, description, prix, lien_achat, image_url, categorie) VALUES (?, ?, ?, ?, ?, ?)';
-        params = [nom, description, prix, lien_achat, image_url, categorie];
+        cb(new Error("Format de fichier non autorisé. Seuls JPG, PNG, GIF sont acceptés."), false);
     }
+};
 
-    db.query(sql, params, (err, result) => {
-        if (err) {
-            console.error("Erreur lors de l'ajout du produit:", err);
-            return res.status(500).json({ error: "Erreur serveur" });
-        }
-        res.json({ message: "Produit ajouté", id: result.insertId });
-    });
+const upload = multer({ 
+    storage: storage, 
+    fileFilter: fileFilter,
+    limits: { fileSize: 2 * 1024 * 1024 }
 });
 
-
-
-// Modifier un produit
-router.put('/:id', upload.single("image"), (req, res) => {
-    const { nom, description, prix, lien_achat, quantite } = req.body;
-    const { id } = req.params;
-    const image_url = req.file ? `/uploads/${req.file.filename}` : req.body.image_url;
-
-    db.query('SELECT categorie FROM produits WHERE id = ?', [id], (err, results) => {
-        if (err || results.length === 0) {
-            console.error('Erreur lors de la récupération du produit:', err);
-            return res.status(500).json({ error: 'Erreur serveur' });
-        }
-
-        const categorie = results[0].categorie;
-        let sql, params;
-
-        if (categorie === 'spray') {
-            sql = 'UPDATE produits SET nom=?, description=?, prix=?, image_url=?, quantite=? WHERE id=?';
-            params = [nom, description, prix, image_url, quantite, id];
-        } else {
-            sql = 'UPDATE produits SET nom=?, description=?, prix=?, lien_achat=?, image_url=? WHERE id=?';
-            params = [nom, description, prix, lien_achat, image_url, id];
-        }
-
-        db.query(sql, params, (err) => {
-            if (err) {
-                console.error('Erreur lors de la modification du produit:', err);
-                return res.status(500).json({ error: 'Erreur serveur' });
-            }
-            res.json({ message: 'Produit mis à jour' });
-        });
-    });
-});
-
-
-// Supprimer un produit
-router.delete('/:id', (req, res) => {
-    const { id } = req.params;
-
-    const sql = 'DELETE FROM produits WHERE id=?';
-    db.query(sql, [id], (err) => {
-        if (err) {
-            console.error('Erreur lors de la suppression du produit:', err);
-            return res.status(500).json({ error: 'Erreur serveur' });
-        }
-        res.json({ message: 'Produit supprimé' });
-    });
-});
+// Routes des produits
+router.get('/', limiter, getProduits);
+router.post('/', verifierAdmin, limiter, upload.single("image"), addProduit);
+router.put('/:id', verifierAdmin, limiter, upload.single("image"), updateProduit);
+router.delete('/:id', verifierAdmin, limiter, deleteProduit);
 
 router.use("/uploads", express.static("uploads"));
 

@@ -670,3 +670,32 @@ input[type="checkbox"] {
 .modal form .btn-submit:hover {
   background: #005b8e;
 }
+
+@media screen and (max-width: 768px) {
+  .navbar {
+      height: 80px;
+      padding: 12px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+  }
+
+  .logo {
+      font-size: 25px;
+      margin-left: 0px;
+      margin-right: 10px;
+  }
+
+  .page-title {
+      font-size: 15px;
+      flex-grow: 1;
+      text-align: center;
+      margin: 0 auto;
+  }
+
+  .cart-btn {
+      font-size: 16px;
+      padding: 8px 12px;
+      margin-right: 0px;
+  }
+}

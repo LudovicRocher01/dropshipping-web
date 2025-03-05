@@ -198,11 +198,26 @@ async function chargerCommandes() {
 
             const adresseAffichee = commande.adresse === "Retrait au cabinet" ? "Retrait au cabinet" : commande.adresse;
 
+            const dateObj = new Date(commande.created_at);
+
+            const day = ("0" + dateObj.getDate()).slice(-2);
+            const month = ("0" + (dateObj.getMonth() + 1)).slice(-2);
+            const year = dateObj.getFullYear();
+
+            const hours = ("0" + dateObj.getHours()).slice(-2);
+            const minutes = ("0" + dateObj.getMinutes()).slice(-2);
+            const seconds = ("0" + dateObj.getSeconds()).slice(-2);
+
+            const dateFormatted = `${day}/${month}/${year}`;
+            const timeFormatted = `${hours}h${minutes}m${seconds}s`;
+
             row.innerHTML = `
-                <td>${commande.id}</td>
+                <td>${commande.transaction_id}</td>
                 <td>${commande.prenom} ${commande.nom}</td>
                 <td>${commande.email}</td>
                 <td>${adresseAffichee}</td>
+                <td> ${dateFormatted} <br>
+                ${timeFormatted} </td>
                 <td>${produitsHTML}</td>
                 <td>${parseFloat(commande.total).toFixed(2)} €</td>
                 <td><button onclick="supprimerCommande(${commande.id})" class="delete-btn">Archiver</button></td>

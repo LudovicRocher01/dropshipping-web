@@ -1,42 +1,29 @@
-const nodemailer = require('nodemailer');
-const dns = require('dns');
-dns.setDefaultResultOrder('ipv4first');
+const express = require('express');
+const router = express.Router();
+const { envoyerConfirmationCommande, notifierVendeur } = require('../controllers/mailController');
 
-const transporter = nodemailer.createTransport({
-  host: 'smtp.ethereal.email',
-  port: 587,
-  secure: false,
-  auth: {
-    user: 'georgette.oconner@ethereal.email',
-    pass: 'zjVgBWVcQf7eBaXt8g'
-  }
+// Route pour tester l'envoi d'un email de confirmation (exemple)
+router.post('/confirm', async (req, res) => {
+    try {
+        const { client, produits, total, transactionId } = req.body;
+        await envoyerConfirmationCommande(client, produits, total, transactionId);
+        res.json({ message: "Email de confirmation envoyé." });
+    } catch (error) {
+        console.error("Erreur lors de l'envoi de l'email :", error);
+        res.status(500).json({ error: "Échec de l'envoi de l'email." });
+    }
 });
 
-async function envoyerConfirmationCommande(client, produits, total) {
-  const adresseAffichee = client.adresse === "Retrait au cabinet" ? "Retrait au cabinet" : client.adresse;
+// Route pour tester l'envoi d'un email au vendeur (exemple)
+router.post('/notify', async (req, res) => {
+    try {
+        const { client, produits, total, transactionId } = req.body;
+        await notifierVendeur(client, produits, total, transactionId);
+        res.json({ message: "Notification envoyée au vendeur." });
+    } catch (error) {
+        console.error("Erreur lors de l'envoi de la notification :", error);
+        res.status(500).json({ error: "Échec de l'envoi de la notification." });
+    }
+});
 
-  const produitsListe = produits.map(p =>
-      `<li>${p.nom} (x${p.quantite}) - ${p.prix} €</li>`).join('');
-
-  const mailOptions = {
-      from: '"Osteozen" <order@osteozen.net>',
-      to: client.email,
-      subject: 'Confirmation de votre commande - Osteozen',
-      html: `
-          <h2>Merci ${client.prenom} ${client.nom} pour votre commande !</h2>
-          <p>Voici le récapitulatif de votre commande :</p>
-          <ul>${produitsListe}</ul>
-          <p><strong>Total : ${total} €</strong></p>
-          <p><strong>Mode de livraison :</strong> ${adresseAffichee}</p>
-          <p>Votre commande sera traitée sous peu. Merci de votre confiance !</p>
-      `
-  };
-
-  const info = await transporter.sendMail(mailOptions);
-  console.log("📧 Email envoyé : %s", info.messageId);
-  console.log("Aperçu de l'email : %s", nodemailer.getTestMessageUrl(info));
-
-}
-
-
-module.exports = { envoyerConfirmationCommande };
+module.exports = router;
