@@ -12,7 +12,7 @@ exports.getProduits = (req, res) => {
 };
 
 exports.addProduit = (req, res) => {
-    const { nom, description, prix, lien_achat, categorie, quantite } = req.body;
+    const { nom, description, prix, lien_achat, categorie } = req.body;
     const image_url = req.file ? `/uploads/${req.file.filename}` : null;
 
     if (!nom || !categorie || !image_url) {
@@ -29,18 +29,12 @@ exports.addProduit = (req, res) => {
 
     let sql, params;
 
-    if (categorie === "spray") {
-        if (!quantite || isNaN(quantite) || quantite < 0) {
-            return res.status(400).json({ error: "Quantité requise pour les sprays et doit être positive." });
-        }
-        sql = 'INSERT INTO produits (nom, description, prix, image_url, categorie, quantite) VALUES (?, ?, ?, ?, ?, ?)';
-        params = [nom, description, prix, image_url, categorie, parseInt(quantite)];
-    } else if (categorie === "conference") {
+    if (categorie === "conference") {
         sql = 'INSERT INTO produits (nom, description, image_url, categorie) VALUES (?, ?, ?, ?)';
         params = [nom, description, image_url, categorie];
     } else {
-        sql = 'INSERT INTO produits (nom, description, lien_achat, image_url, categorie) VALUES (?, ?, ?, ?, ?)';
-        params = [nom, description, lien_achat, image_url, categorie];
+        sql = 'INSERT INTO produits (nom, description, lien_achat, prix, image_url, categorie) VALUES (?, ?, ?, ?, ?, ?)';
+        params = [nom, description, lien_achat || null, prix || null, image_url, categorie];
     }
 
     db.query(sql, params, (err, result) => {
@@ -52,8 +46,9 @@ exports.addProduit = (req, res) => {
     });
 };
 
+
 exports.updateProduit = (req, res) => {
-    const { nom, description, prix, lien_achat, quantite } = req.body;
+    const { nom, description, prix, lien_achat } = req.body;
     const { id } = req.params;
     const image_url = req.file ? `/uploads/${req.file.filename}` : req.body.image_url;
 
@@ -70,12 +65,12 @@ exports.updateProduit = (req, res) => {
         const categorie = results[0].categorie;
         let sql, params;
 
-        if (categorie === 'spray') {
-            sql = 'UPDATE produits SET nom=?, description=?, prix=?, image_url=?, quantite=? WHERE id=?';
-            params = [nom, description, prix, image_url, quantite, id];
+        if (categorie === 'conference') {
+            sql = 'UPDATE produits SET nom=?, description=?, image_url=? WHERE id=?';
+            params = [nom, description, image_url, id];
         } else {
             sql = 'UPDATE produits SET nom=?, description=?, prix=?, lien_achat=?, image_url=? WHERE id=?';
-            params = [nom, description, prix, lien_achat, image_url, id];
+            params = [nom, description, prix || null, lien_achat || null, image_url, id];
         }
 
         db.query(sql, params, (err) => {
@@ -87,6 +82,7 @@ exports.updateProduit = (req, res) => {
         });
     });
 };
+
 
 exports.deleteProduit = (req, res) => {
     const { id } = req.params;

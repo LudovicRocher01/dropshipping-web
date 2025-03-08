@@ -57,11 +57,6 @@ async function chargerProduits() {
                     : `<input type="text" value="${produit.lien_achat}" id="lien-${produit.id}">`}
                 </td>
                 <td>
-                    ${produit.categorie === "spray"
-                    ? `<input type="number" value="${produit.quantite}" id="quantite-${produit.id}" min="0">`
-                    : "-"}
-                </td>
-                <td>
                     <button onclick="modifierProduit(${produit.id})">Modifier</button>
                     <button onclick="supprimerProduit(${produit.id})" style="color:red;">Supprimer</button>
                 </td>
@@ -85,21 +80,25 @@ function toggleFileInput(id) {
 async function modifierProduit(id) {
     const nom = document.getElementById(`nom-${id}`).value;
     const description = document.getElementById(`desc-${id}`).value;
-    const prix = document.getElementById(`prix-${id}`).value;
-    const lien_achat = document.getElementById(`lien-${id}`) ? document.getElementById(`lien-${id}`).value : "";
-    const quantite = document.getElementById(`quantite-${id}`)?.value ?? null;
+    const prixElement = document.getElementById(`prix-${id}`);
+    const lienAchatElement = document.getElementById(`lien-${id}`);
     const imageInput = document.getElementById(`image-${id}`).files[0];
-    const currentImage = document.getElementById(`image-${id}`).dataset.currentImage; 
+    const currentImage = document.getElementById(`image-${id}`).dataset.currentImage;
 
     const categorie = document.querySelector(`tr td:nth-child(3) input[disabled]`).value;
 
     const formData = new FormData();
     formData.append("nom", nom);
     formData.append("description", description);
-    formData.append("prix", prix);
-    formData.append("lien_achat", lien_achat);
     formData.append("categorie", categorie);
-    if (quantite !== null) formData.append("quantite", quantite);
+
+    // Ajout des valeurs uniquement si elles existent
+    if (prixElement) {
+        formData.append("prix", prixElement.value);
+    }
+    if (lienAchatElement) {
+        formData.append("lien_achat", lienAchatElement.value);
+    }
 
     if (imageInput) {
         formData.append("image", imageInput);
@@ -119,6 +118,7 @@ async function modifierProduit(id) {
         console.error("Erreur lors de la modification du produit :", error);
     }
 }
+
 
 
 async function supprimerProduit(id) {
@@ -147,10 +147,6 @@ document.getElementById("add-product-form").addEventListener("submit", async fun
     if (selectedCategory !== "conference") {
         formData.append("prix", document.getElementById("prix").value);
         formData.append("lien_achat", document.getElementById("lien_achat").value);
-    }
-
-    if (selectedCategory === "spray") {
-        formData.append("quantite", document.getElementById("quantite").value);
     }
 
     try {
@@ -268,19 +264,15 @@ function mettreAJourFormulaire() {
     const selectedCategory = document.getElementById('categorie').value;
     const priceField = document.getElementById('price-field');
     const linkField = document.getElementById('link-field');
-    const quantiteField = document.getElementById('quantite-field');
 
     if (selectedCategory === 'spray') {
         linkField.style.display = 'none';
-        quantiteField.style.display = 'block';
         priceField.style.display = 'block';
     } else if (selectedCategory === 'conference') {
         linkField.style.display = 'none';
-        quantiteField.style.display = 'none';
         priceField.style.display = 'none';
     } else {
         linkField.style.display = 'block';
-        quantiteField.style.display = 'none';
         priceField.style.display = 'none';
     }
 }

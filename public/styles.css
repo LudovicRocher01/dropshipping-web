@@ -74,23 +74,29 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
   background-color: rgba(255, 255, 255, 0.1);
   border-radius: 10px;
-  padding: 40px;
+  padding: 20px;
   font-size: 1.5rem;
   font-weight: bold;
   color: white;
   text-decoration: none;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  height: 350px;
 }
 
 .tile img {
   width: 100%;
-  max-width: 300px;
-  height: auto;
-  margin-bottom: 10px;
+  height: 100%;
   object-fit: cover;
+  position: absolute;
+  top: 0;
+  left : 0;
+  opacity: 0.8;
+  transition: opacity 0.3s ease-in-out;
 }
 
 .tile:hover {
@@ -98,10 +104,37 @@ body {
   box-shadow: 0 10px 15px rgba(255, 255, 255, 0.2);
 }
 
-.tile.health { background-color: #4caf50; }
-.tile.books { background-color: #ff9800; }
-.tile.sprays { background-color: #d81b60; }
-.tile.conferences { background-color: #0077b6; }
+.tile:hover img {
+  opacity: 1;
+}
+
+.tile-text {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 1.3rem;
+  text-align: center;
+  width: 90%;
+  max-width: 250px;
+}
+
+.tile.health { background: linear-gradient(to top, #4caf50, transparent); }
+.tile.books { background: linear-gradient(to top, #ff9800, transparent); }
+.tile.sprays { background: linear-gradient(to top, #d81b60, transparent); }
+.tile.conferences { background: linear-gradient(to top, #0077b6, transparent); }
+
+.disclaimer {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+  font-style: italic;
+  margin-top: 120px;
+  margin-bottom: -80px;
+}
 
 
 .produits-section {
@@ -132,11 +165,6 @@ body {
 .panier-item img {
   max-width: 50px;
   border-radius: 5px;
-}
-
-.quantite {
-  display: flex;
-  align-items: center;
 }
 
 .total {
@@ -321,24 +349,6 @@ body {
 
 .footer i {
   margin-right: 8px;
-}
-
-.rupture .product-img {
-  opacity: 0.5;
-  filter: grayscale(100%);
-}
-
-.rupture-label {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  background: red;
-  color: white;
-  padding: 5px;
-  font-size: 0.9rem;
-  border-radius: 5px;
-  text-align: center;
-  width: 100px; 
 }
 
 .toast {

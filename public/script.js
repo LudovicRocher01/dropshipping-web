@@ -12,14 +12,15 @@ function getActionButton(produit) {
         return `<a href="${produit.lien_achat}" target="_blank">
                     <i class="material-icons">add_shopping_cart</i>
                 </a>`;
-    } else if (produit.categorie === "spray" && produit.quantite > 0) {
-        return `<a href="#" class="add-to-cart" data-id="${produit.id}" data-quantite="${produit.quantite}">
+    } else if (produit.categorie === "spray") {
+        return `<a href="#" class="add-to-cart" data-id="${produit.id}">
                     <i class="material-icons">add_shopping_cart</i>
                 </a>`;
     } else {
         return "";
     }
 }
+
 
 async function afficherProduits(categorie) {
     try {
@@ -37,19 +38,8 @@ async function afficherProduits(categorie) {
             const wrapper = document.createElement("div");
             wrapper.classList.add("wrapper", "produit");
 
-            if (produit.categorie === "spray" && produit.quantite === 0) {
-                wrapper.classList.add("rupture");
-            }
 
             const actionButton = getActionButton(produit);
-
-            const quantiteDisplay = produit.categorie === "spray" 
-                ? `<p class="quantite-dispo">${produit.quantite > 0 ? `En stock: ${produit.quantite}` : ''}</p>` 
-                : '';
-
-            const ruptureLabel = produit.categorie === "spray" && produit.quantite === 0
-                ? `<div class="rupture-label">Rupture de stock</div>`
-                : '';
 
             const prixDisplay = produit.categorie === "spray" 
                 ? `<p>${produit.prix}€</p>` 
@@ -58,14 +48,12 @@ async function afficherProduits(categorie) {
             wrapper.innerHTML = `
                 <div class="container">
                     <div class="top product-img" style="background-image: url('${produit.image_url}')">
-                        ${ruptureLabel}
                     </div>
                     <div class="bottom">
                         <div class="left">
                             <div class="details">
                                 <h1>${produit.nom}</h1>
                                 ${prixDisplay}
-                                ${quantiteDisplay}
                             </div>
                             <div class="buy">${actionButton}</div>
                         </div>
@@ -105,17 +93,17 @@ async function afficherProduits(categorie) {
         document.querySelectorAll('.add-to-cart').forEach(button => {
             button.addEventListener('click', (e) => {
                 e.preventDefault(); 
-
+        
                 const produitDiv = e.currentTarget.closest(".produit");
                 const id = e.currentTarget.dataset.id;
-                const maxQuantite = parseInt(e.currentTarget.dataset.quantite);
                 const nom = produitDiv.querySelector("h1").textContent;
                 const prix = parseFloat(produitDiv.querySelector(".details p").textContent.replace("€", ""));
                 const image = produitDiv.querySelector(".top").style.backgroundImage.slice(5, -2);
-
-                ajouterAuPanier(id, nom, prix, image, maxQuantite);
+        
+                ajouterAuPanier(id, nom, prix, image);
             });
         });
+        
 
     } catch (error) {
         console.error("Erreur lors du chargement des produits :", error);
@@ -147,24 +135,14 @@ function getPanier() {
     return JSON.parse(localStorage.getItem("panier")) || [];
 }
 
-function ajouterAuPanier(id, nom, prix, image, maxQuantite) {
+function ajouterAuPanier(id, nom, prix, image) {
     let panier = getPanier();
     let produitExistant = panier.find(prod => prod.id == id);
 
     if (produitExistant) {
-        if (produitExistant.quantite < maxQuantite) {
-            produitExistant.quantite += 1;
-        } else {
-            showToast(`Il n'y a plus de ${nom} disponible.`);
-            return;
-        }
+        produitExistant.quantite += 1;
     } else {
-        if (maxQuantite > 0) {
-            panier.push({ id, nom, prix, image, quantite: 1, maxQuantite: maxQuantite });
-        } else {
-            showToast(`${nom} est en rupture de stock.`);
-            return;
-        }
+        panier.push({ id, nom, prix, image, quantite: 1 });
     }
 
     localStorage.setItem("panier", JSON.stringify(panier));
@@ -172,6 +150,7 @@ function ajouterAuPanier(id, nom, prix, image, maxQuantite) {
     afficherPanier();
     ouvrirPanier();
 }
+
 
 function mettreAJourBadgePanier() {
     let panier = getPanier();
@@ -227,33 +206,18 @@ async function afficherPanier() {
     document.getElementById("subtotal").textContent = subtotal.toFixed(2);
     document.getElementById("shipping").textContent = shipping.toFixed(2);
     document.getElementById("total").textContent = total.toFixed(2);
-
-    const retraitCheckbox = document.getElementById("retraitMagasin");
-    if (retraitCheckbox) {
-        retraitCheckbox.checked = retraitMagasin;
-    }
 }
+
 
 function modifierQuantite(id, changement) {
     let panier = getPanier();
     let produit = panier.find(prod => prod.id == id);
 
     if (produit) {
-        const maxQuantite = produit.maxQuantite || Infinity;
-
-        if (changement > 0) {
-            if (produit.quantite < maxQuantite) {
-                produit.quantite += changement;
-            } else {
-                showToast(`Vous avez atteint la quantité maximale disponible pour ${produit.nom}.`);
-                return;
-            }
-        } else {
-            produit.quantite += changement;
-            if (produit.quantite <= 0) {
-                panier = panier.filter(prod => prod.id != id);
-                showToast(`${produit.nom} a été retiré de votre panier.`);
-            }
+        produit.quantite += changement;
+        if (produit.quantite <= 0) {
+            panier = panier.filter(prod => prod.id != id);
+            showToast(`${produit.nom} a été retiré de votre panier.`);
         }
     }
 
@@ -261,6 +225,7 @@ function modifierQuantite(id, changement) {
     afficherPanier();
     mettreAJourBadgePanier();
 }
+
 
 function supprimerProduit(id) {
     let panier = getPanier();
@@ -365,7 +330,6 @@ function initialiserPreinscription() {
                 throw new Error(result.error || "Une erreur est survenue.");
             }
     
-            // ✅ Afficher la boîte de confirmation
             document.getElementById("confirmation-message").textContent = "🎉 Pré-inscription enregistrée avec succès !";
             document.getElementById("confirmation-modal").style.display = "block";
             
@@ -376,7 +340,6 @@ function initialiserPreinscription() {
         }
     });
     
-    // ✅ Fermer la boîte de confirmation en cliquant sur "OK"
     document.getElementById("close-confirmation").addEventListener("click", function () {
         document.getElementById("confirmation-modal").style.display = "none";
     });
