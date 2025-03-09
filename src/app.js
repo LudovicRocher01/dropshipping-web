@@ -12,6 +12,7 @@ const PORT = 3000;
 
 app.use(express.static(path.join(__dirname, '../public')));
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
+app.set('trust proxy', 1);
 
 app.use((req, res, next) => {
     const log = `${new Date().toISOString()} - ${req.method} ${req.url} - IP: ${req.ip}\n`;
