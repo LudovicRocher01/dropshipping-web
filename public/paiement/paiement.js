@@ -1,5 +1,5 @@
 function getPanierValide() {
-    return JSON.parse(sessionStorage.getItem("panierValide")) || [];
+    return JSON.parse(localStorage.getItem("panierValide")) || [];
 }
 
 async function afficherPanier() {
@@ -109,10 +109,10 @@ async function lancerPaiement() {
                     transactionId: details.id
                 };
 
-                sessionStorage.setItem("orderClient", JSON.stringify(client));
-                sessionStorage.setItem("orderProduits", JSON.stringify(panier));
-                sessionStorage.setItem("orderTotal", totalAmountGlobal.toFixed(2));
-                sessionStorage.setItem("orderTransactionId", details.id);
+                localStorage.setItem("orderClient", JSON.stringify(client));
+                localStorage.setItem("orderProduits", JSON.stringify(panier));
+                localStorage.setItem("orderTotal", totalAmountGlobal.toFixed(2));
+                localStorage.setItem("orderTransactionId", details.id);
 
                 fetch('/api/commande/submit', {
                     method: 'POST',
@@ -123,6 +123,11 @@ async function lancerPaiement() {
                 .then(data => {
                     sessionStorage.setItem("orderId", data.orderId);
                     localStorage.removeItem("panier");
+                    localStorage.removeItem("panierValide");
+                    localStorage.removeItem("orderClient");
+                    localStorage.removeItem("orderProduits");
+                    localStorage.removeItem("orderTotal");
+                    localStorage.removeItem("orderTransactionId");
 
                     setTimeout(() => {
                         window.location.href = "../recap/recap-commande.html";
@@ -142,6 +147,13 @@ async function lancerPaiement() {
 
 
 document.addEventListener("DOMContentLoaded", () => {
-    afficherPanier()
-    lancerPaiement();
+    let panier = JSON.parse(localStorage.getItem("panierValide")) || [];
+    
+    if (panier.length > 0) {
+        afficherPanier();
+        lancerPaiement();
+    } else {
+        console.warn("⚠️ Panier vide, possible perte de session.");
+    }
 });
+

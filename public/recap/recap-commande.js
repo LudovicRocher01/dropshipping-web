@@ -1,8 +1,8 @@
 document.addEventListener("DOMContentLoaded", async() => {
-    const client = JSON.parse(sessionStorage.getItem("orderClient"));
-    const produits = JSON.parse(sessionStorage.getItem("orderProduits"));
-    const total = sessionStorage.getItem("orderTotal");
-    const transactionId = sessionStorage.getItem("orderTransactionId");
+    const client = JSON.parse(localStorage.getItem("orderClient"));
+    const produits = JSON.parse(localStorage.getItem("orderProduits"));
+    const total = localStorage.getItem("orderTotal");
+    const transactionId = localStorage.getItem("orderTransactionId");
     const prixLivraison = (client.adresse === "Retrait au cabinet") ? 0 : await getShippingFee();;
 
     if (client) {
@@ -27,6 +27,12 @@ document.addEventListener("DOMContentLoaded", async() => {
             </ul>
             <h3>Total payé : ${parseFloat(total).toFixed(2)} €</h3>
         `;
+
+        sessionStorage.removeItem("orderClient");
+        sessionStorage.removeItem("orderProduits");
+        sessionStorage.removeItem("orderTotal");
+        sessionStorage.removeItem("orderTransactionId");
+        sessionStorage.removeItem("orderId");
     } else {
         document.getElementById("recap").innerHTML = "<p>Aucune donnée de commande trouvée.</p>";
     }
