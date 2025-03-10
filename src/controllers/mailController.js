@@ -80,3 +80,29 @@ exports.notifierVendeur = async (client, produits, total, transactionId) => {
 
   const info = await transporter.sendMail(mailOptions);
 };
+
+exports.envoyerCodeAccesPDF = async (email, accessCode) => {
+  const mailOptions = {
+      from: process.env.MAIL_FROM,
+      to: email,
+      subject: "📄 Votre code d'accès au PDF - La Mascarade Alimentaire",
+      html: `
+          <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+              <h2 style="color: #4CAF50;">📄 Accès au PDF - La Mascarade Alimentaire</h2>
+              <p>Merci pour votre achat ! Voici votre code d'accès :</p>
+              <h2 style="background: #f3f3f3; padding: 10px; display: inline-block; border-radius: 5px;">${accessCode}</h2>
+              <p>Accédez à votre document en entrant ce code sur <a href="https://osteozen.net/pdf-access.html">cette page</a>.</p>
+              <p>Si vous avez des questions, contactez-nous.</p>
+              <p><strong>sosteopathe@gmail.com</strong></p>
+          </div>
+      `
+  };
+
+  try {
+      await transporter.sendMail(mailOptions);
+      console.log(`📩 Email envoyé avec succès à ${email}`);
+  } catch (error) {
+      console.error("❌ Erreur lors de l'envoi de l'email :", error);
+      throw new Error("Échec de l'envoi du code d'accès.");
+  }
+};

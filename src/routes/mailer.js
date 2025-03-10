@@ -24,4 +24,15 @@ router.post('/notify', async (req, res) => {
     }
 });
 
+router.post('/send-pdf-code', async (req, res) => {
+    try {
+        const { email, accessCode } = req.body;
+        await envoyerCodeAccesPDF(email, accessCode);
+        res.json({ message: "Code PDF envoyé." });
+    } catch (error) {
+        console.error("Erreur lors de l'envoi du code PDF :", error);
+        res.status(500).json({ error: "Échec de l'envoi du code PDF." });
+    }
+});
+
 module.exports = router;

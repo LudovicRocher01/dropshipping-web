@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OSTEOZEN - Accès au pdf La Mascarade Alimentaire</title>
+    <link rel="stylesheet" href="pdfStyle.css">
+    <script src="https://www.paypal.com/sdk/js?client-id=AYf8d2tAP5aRlQfOcLYq3cRrUc1YTKgTFrlkXFxC-bIJeizb1RcjpONNTF8dnAvI8mvd32aLjaxSZKem&currency=EUR"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">🌿 Osteozen</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1>Accès au PDF - La Mascarade Alimentaire</h1>
+        <p>Prix : 10€</p>
+
+        <h3>🔑 Déjà un code d'accès ?</h3>
+        <input type="text" id="accessCode" placeholder="Entrez votre code">
+        <button onclick="verifierCode()">Accéder</button>
+
+        <h3>💳 Payer et recevoir un code</h3>
+        <div id="paypal-button-container"></div>
+    </div>
+
+    <div id="footer-container"></div>
+    <script src="pdf-access.js"></script>
+</body>
+</html>
