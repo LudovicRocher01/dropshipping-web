@@ -10,9 +10,11 @@ exports.verifierCode = async (req, res) => {
     const accessCode = req.params.code;
 
     try {
-        const results = await query("SELECT * FROM pdf_access WHERE code = ?", [accessCode]);
+        const results = await query("SELECT code FROM pdf_access");
+        
+        const validCode = results.find(row => bcrypt.compareSync(accessCode, row.code));
 
-        if (results.length === 0) {
+        if (!validCode) {
             return res.status(403).json({ error: "Code invalide ou expiré." });
         }
 
@@ -24,6 +26,9 @@ exports.verifierCode = async (req, res) => {
     }
 };
 
+
+const bcrypt = require("bcrypt");
+
 exports.genererCodeAcces = async (req, res) => {
     const { email, transactionId } = req.body;
 
@@ -33,8 +38,10 @@ exports.genererCodeAcces = async (req, res) => {
 
     const accessCode = Math.random().toString(36).substring(2, 10).toUpperCase();
 
+    const hashedCode = await bcrypt.hash(accessCode, 10);
+
     try {
-        await query("INSERT INTO pdf_access (email, code, transaction_id) VALUES (?, ?, ?)", [email, accessCode, transactionId]);
+        await query("INSERT INTO pdf_access (email, code, transaction_id) VALUES (?, ?, ?)", [email, hashedCode, transactionId]);
 
         await envoyerCodeAccesPDF(email, accessCode);
 

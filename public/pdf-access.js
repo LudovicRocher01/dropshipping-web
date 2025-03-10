@@ -25,7 +25,7 @@ paypal.Buttons({
             const response = await fetch("/api/paypal/order", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ total: 0.05 })
+                body: JSON.stringify({ total: 10 })
             });
 
             const data = await response.json();
