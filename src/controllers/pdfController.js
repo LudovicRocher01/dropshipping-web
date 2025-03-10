@@ -10,9 +10,13 @@ exports.verifierCode = async (req, res) => {
     const accessCode = req.params.code;
 
     try {
-        const results = await query("SELECT code FROM pdf_access");
-        
-        const validCode = results.find(row => bcrypt.compareSync(accessCode, row.code));
+        const results = await query("SELECT code_hash FROM pdf_access WHERE code_hash IS NOT NULL");
+
+        if (results.length === 0) {
+            return res.status(403).json({ error: "Code invalide ou expiré." });
+        }
+
+        const validCode = results.find(row => bcrypt.compareSync(accessCode, row.code_hash));
 
         if (!validCode) {
             return res.status(403).json({ error: "Code invalide ou expiré." });
@@ -25,6 +29,8 @@ exports.verifierCode = async (req, res) => {
         res.status(500).json({ error: "Erreur serveur" });
     }
 };
+
+
 
 
 const bcrypt = require("bcrypt");
@@ -41,7 +47,7 @@ exports.genererCodeAcces = async (req, res) => {
     const hashedCode = await bcrypt.hash(accessCode, 10);
 
     try {
-        await query("INSERT INTO pdf_access (email, code, transaction_id) VALUES (?, ?, ?)", [email, hashedCode, transactionId]);
+        await query("INSERT INTO pdf_access (email, code_hash, transaction_id) VALUES (?, ?, ?)", [email, hashedCode, transactionId]);
 
         await envoyerCodeAccesPDF(email, accessCode);
 
@@ -51,3 +57,4 @@ exports.genererCodeAcces = async (req, res) => {
         res.status(500).json({ error: "Erreur serveur" });
     }
 };
+
