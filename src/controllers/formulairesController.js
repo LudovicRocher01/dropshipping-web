@@ -1,5 +1,6 @@
 const db = require('../models/db');
 const validator = require("validator");
+const { notifierPreinscription } = require("./mailController");
 
 exports.getFormulaires = (req, res) => {
     db.query(`
@@ -55,11 +56,12 @@ exports.addFormulaire = (req, res) => {
     }
 
     const sql = `INSERT INTO formulaires (nom, prenom, email, telephone, conference_id) VALUES (?, ?, ?, ?, ?)`;
-    db.query(sql, [nom, prenom, email, telephone, conference_id], (err, result) => {
+    db.query(sql, [nom, prenom, email, telephone, conference_id], async (err, result) => {
         if (err) {
             console.error("Erreur lors de l'ajout de la pré-inscription :", err);
             return res.status(500).json({ error: "Erreur serveur" });
         }
+        await notifierPreinscription(nom, prenom, email, telephone, conference_id);
         res.json({ message: "Pré-inscription enregistrée avec succès !" });
     });
 };

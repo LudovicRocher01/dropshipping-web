@@ -54,7 +54,7 @@ exports.envoyerConfirmationCommande = async (client, produits, total, transactio
 exports.notifierVendeur = async (client, produits, total, transactionId) => {
   const mailOptions = {
     from: process.env.MAIL_FROM,
-    to: process.env.MAIL_ADMIN,
+    to: process.env.MAIL_CONTACT,
     subject: '📢 Nouvelle commande reçue - Osteozen',
     html: `
       <div style="font-family: Arial, sans-serif; line-height: 1.6;">
@@ -106,3 +106,36 @@ exports.envoyerCodeAccesPDF = async (email, accessCode) => {
       throw new Error("Échec de l'envoi du code d'accès.");
   }
 };
+
+exports.notifierPreinscription = async (nom, prenom, email, telephone, conferenceId) => {
+  try {
+      const results = await query("SELECT nom FROM produits WHERE id = ?", [conferenceId]);
+      const conferenceNom = results.length > 0 ? results[0].nom : "Conférence inconnue";
+
+      const mailOptions = {
+          from: process.env.MAIL_FROM,
+          to: process.env.MAIL_CONTACT,
+          subject: '📢 Nouvelle pré-inscription à une conférence',
+          html: `
+              <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+                  <h2 style="color: #d9534f;">📢 Nouvelle pré-inscription reçue !</h2>
+                  <p>Une personne vient de se pré-inscrire à une conférence :</p>
+
+                  <h3>📌 Détails :</h3>
+                  <ul style="list-style: none; padding: 0;">
+                      <li><strong>Nom :</strong> ${nom} ${prenom}</li>
+                      <li><strong>Email :</strong> ${email}</li>
+                      <li><strong>Téléphone :</strong> ${telephone}</li>
+                      <li><strong>Conférence :</strong> ${conferenceNom}</li>
+                  </ul>
+              </div>
+          `
+      };
+
+      await transporter.sendMail(mailOptions);
+      console.log(`📩 Email envoyé à ${process.env.MAIL_CONTACT} pour la pré-inscription.`);
+  } catch (error) {
+      console.error("Erreur lors de l'envoi de la notification de pré-inscription :", error);
+  }
+};
+  

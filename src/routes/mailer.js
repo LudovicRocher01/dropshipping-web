@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { envoyerConfirmationCommande, notifierVendeur } = require('../controllers/mailController');
+const { envoyerConfirmationCommande, notifierVendeur, envoyerCodeAccesPDF, notifierPreinscription } = require('../controllers/mailController');
 
 router.post('/confirm', async (req, res) => {
     try {
@@ -34,5 +34,17 @@ router.post('/send-pdf-code', async (req, res) => {
         res.status(500).json({ error: "Échec de l'envoi du code PDF." });
     }
 });
+
+router.post('/inscription', async (req, res) => {
+    try {
+        const { nom, prenom, email, telephone, conference_id } = req.body;
+        await notifierPreinscription(nom, prenom, email, telephone, conference_id);
+        res.json({ message: "Email de pré-inscription envoyé." });
+    } catch (error) {
+        console.error("Erreur lors de l'envoi de l'email de pré-inscription :", error);
+        res.status(500).json({ error: "Échec de l'envoi de l'email de pré-inscription." });
+    }
+});
+
 
 module.exports = router;
