@@ -35,7 +35,7 @@ async function afficherPanier() {
         container.appendChild(produitDiv);
     });
 
-    const retraitMagasin = sessionStorage.getItem("retraitMagasin") === "true";
+    const retraitMagasin = localStorage.getItem("retraitMagasin") === "true";
     const shipping = retraitMagasin ? 0 : await getShippingFee();
     let total = subtotal + shipping;
 
@@ -62,7 +62,7 @@ async function lancerPaiement() {
         return;
     }
 
-    const retraitMagasin = sessionStorage.getItem("retraitMagasin") === "true";
+    const retraitMagasin = localStorage.getItem("retraitMagasin") === "true";
     const shippingFee = retraitMagasin ? 0 : await getShippingFee();
     let totalAmountGlobal = panier.reduce((total, prod) => total + prod.prix * prod.quantite, 0) + shippingFee;
 
@@ -89,31 +89,30 @@ async function lancerPaiement() {
         
         onApprove: function (data, actions) {
             return actions.order.capture().then(function (details) {
-
                 document.getElementById("loading-overlay").style.display = "flex";
-
+        
                 const adresseFinale = retraitMagasin ? "Retrait au cabinet" :
                     `${details.purchase_units[0].shipping?.address.address_line_1}, ${details.purchase_units[0].shipping.address.admin_area_2}, ${details.purchase_units[0].shipping.address.postal_code}`;
-
+        
                 const client = {
                     prenom: details.payer.name.given_name,
                     nom: details.payer.name.surname,
                     email: details.payer.email_address,
                     adresse: adresseFinale
                 };
-
+        
                 const orderData = {
                     client,
                     produits: panier,
                     total: totalAmountGlobal.toFixed(2),
                     transactionId: details.id
                 };
-
+        
                 localStorage.setItem("orderClient", JSON.stringify(client));
                 localStorage.setItem("orderProduits", JSON.stringify(panier));
                 localStorage.setItem("orderTotal", totalAmountGlobal.toFixed(2));
                 localStorage.setItem("orderTransactionId", details.id);
-
+        
                 fetch('/api/commande/submit', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -121,27 +120,22 @@ async function lancerPaiement() {
                 })
                 .then(response => response.json())
                 .then(data => {
-                    sessionStorage.setItem("orderId", data.orderId);
+                    localStorage.setItem("orderId", data.orderId);
                     localStorage.removeItem("panier");
                     localStorage.removeItem("panierValide");
-                    localStorage.removeItem("orderClient");
-                    localStorage.removeItem("orderProduits");
-                    localStorage.removeItem("orderTotal");
-                    localStorage.removeItem("orderTransactionId");
-
+        
                     setTimeout(() => {
                         window.location.href = "../recap/recap-commande.html";
                     }, 1000);
                 })
                 .catch(err => {
                     console.error("Erreur enregistrement commande :", err);
-
                     document.getElementById("loading-overlay").style.display = "none";
                     alert("Une erreur s'est produite lors du paiement. Veuillez réessayer.");
                 });
             });
         }
-    }).render('#paypal-button-container');
+            }).render('#paypal-button-container');
 }
 
 

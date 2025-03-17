@@ -28,11 +28,11 @@ document.addEventListener("DOMContentLoaded", async() => {
             <h3>Total payé : ${parseFloat(total).toFixed(2)} €</h3>
         `;
 
-        sessionStorage.removeItem("orderClient");
-        sessionStorage.removeItem("orderProduits");
-        sessionStorage.removeItem("orderTotal");
-        sessionStorage.removeItem("orderTransactionId");
-        sessionStorage.removeItem("orderId");
+        localStorage.removeItem("orderClient");
+        localStorage.removeItem("orderProduits");
+        localStorage.removeItem("orderTotal");
+        localStorage.removeItem("orderTransactionId");
+        localStorage.removeItem("orderId");
     } else {
         document.getElementById("recap").innerHTML = "<p>Aucune donnée de commande trouvée.</p>";
     }

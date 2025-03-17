@@ -199,7 +199,7 @@ async function afficherPanier() {
         container.appendChild(produitDiv);
     });
 
-    const retraitMagasin = sessionStorage.getItem("retraitMagasin") === "true";
+    const retraitMagasin = localStorage.getItem("retraitMagasin") === "true";
     const shipping = retraitMagasin ? 0 : await getShippingFee();
     let total = subtotal + shipping;
 
@@ -252,11 +252,11 @@ function validerPanier() {
         return;
     }
 
-    sessionStorage.setItem("panierValide", JSON.stringify(panier));
+    localStorage.setItem("panierValide", JSON.stringify(panier));
 
     const retraitCheckbox = document.getElementById("retraitMagasin");
     if (retraitCheckbox) {
-        sessionStorage.setItem("retraitMagasin", retraitCheckbox.checked.toString());
+        localStorage.setItem("retraitMagasin", retraitCheckbox.checked.toString());
     }
 
     const currentPath = window.location.pathname;
@@ -377,7 +377,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const retraitCheckbox = document.getElementById("retraitMagasin");
     if (retraitCheckbox) {
         retraitCheckbox.addEventListener("change", () => {
-            sessionStorage.setItem("retraitMagasin", retraitCheckbox.checked.toString());
+            localStorage.setItem("retraitMagasin", retraitCheckbox.checked.toString());
             afficherPanier();
         });
     }
@@ -387,7 +387,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const retraitCheckbox = document.getElementById("retraitMagasin");
     if (retraitCheckbox) {
         retraitCheckbox.addEventListener("change", () => {
-            sessionStorage.setItem("retraitMagasin", retraitCheckbox.checked.toString());
+            localStorage.setItem("retraitMagasin", retraitCheckbox.checked.toString());
             afficherPanier();
         });
     }
@@ -417,7 +417,7 @@ fetch('/composants/sidebar.html')
     const retraitCheckbox = document.getElementById("retraitMagasin");
     if (retraitCheckbox) {
         retraitCheckbox.addEventListener("change", () => {
-            sessionStorage.setItem("retraitMagasin", retraitCheckbox.checked.toString());
+            localStorage.setItem("retraitMagasin", retraitCheckbox.checked.toString());
             afficherPanier();
         });
     }
