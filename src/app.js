@@ -7,6 +7,9 @@ const db = require('./models/db');
 const cookieParser = require("cookie-parser");
 const fs = require('fs')
 const logStream = fs.createWriteStream(path.join(__dirname, 'access.log'), { flags: 'a' });
+const favicon = require('serve-favicon');
+
+app.use(favicon(path.join(__dirname, '../public/images', 'favicon.ico')));
 
 const PORT = 3000;
 
