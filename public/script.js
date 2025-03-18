@@ -422,3 +422,42 @@ fetch('/composants/sidebar.html')
         });
     }
 });
+
+document.addEventListener("DOMContentLoaded", async () => {
+    const footerContainer = document.getElementById("footer-container");
+    if (footerContainer) {
+        try {
+            const response = await fetch("composants/footer.html")
+            if (!response.ok) throw new Error("Impossible de charger le footer.");
+            footerContainer.innerHTML = await response.text();
+            attacherEvenementsFooter();
+        } catch (error) {
+            console.error("Erreur lors du chargement du footer :", error);
+        }
+    }
+});
+
+function attacherEvenementsFooter() {
+    const contactBtn = document.getElementById("contact-btn");
+    const contactModal = document.getElementById("contact-modal");
+    const closeModal = document.querySelector(".modal .close-contact");
+
+    if (!contactBtn || !contactModal || !closeModal) {
+        console.error("Un élément du footer est introuvable !");
+        return;
+    }
+
+    contactBtn.addEventListener("click", () => {
+        contactModal.style.display = "block";
+    });
+
+    closeModal.addEventListener("click", () => {
+        contactModal.style.display = "none";
+    });
+
+    window.addEventListener("click", (event) => {
+        if (event.target === contactModal) {
+            contactModal.style.display = "none";
+        }
+    });
+}
