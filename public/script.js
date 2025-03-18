@@ -174,7 +174,7 @@ async function afficherPanier() {
     
     document.querySelector(".amount").style.display = "";
     document.getElementById("validerPanier").style.display = "";
-    
+
     let subtotal = 0;
     panier.forEach(produit => {
         produit.prix = parseFloat(produit.prix);
@@ -200,6 +200,12 @@ async function afficherPanier() {
     });
 
     const retraitMagasin = localStorage.getItem("retraitMagasin") === "true";
+
+    const retraitCheckbox = document.getElementById("retraitMagasin");
+    if (retraitCheckbox) {
+        retraitCheckbox.checked = retraitMagasin;
+    }
+
     const shipping = retraitMagasin ? 0 : await getShippingFee();
     let total = subtotal + shipping;
 
@@ -385,13 +391,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
 document.addEventListener("DOMContentLoaded", () => {
     const retraitCheckbox = document.getElementById("retraitMagasin");
+    
     if (retraitCheckbox) {
-        retraitCheckbox.addEventListener("change", () => {
+        retraitCheckbox.addEventListener("change", async () => {
             localStorage.setItem("retraitMagasin", retraitCheckbox.checked.toString());
-            afficherPanier();
+            await afficherPanier();
         });
+
+        retraitCheckbox.checked = localStorage.getItem("retraitMagasin") === "true";
     }
 });
+
 
 fetch('/composants/footer.html')
 .then(response => response.text())
