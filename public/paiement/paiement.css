@@ -4,11 +4,10 @@ body {
     font-family: 'Arial', sans-serif;
     text-align: center;
 }
-  
 .navbar {
     top: 0;
     width: 100%;
-    padding: 10px 20px;
+    padding: 10px;
     background: linear-gradient(to right, #4CAF50, #2196F3);
     color: white;
     justify-content: space-between;
@@ -161,6 +160,10 @@ body {
 }
 
 @media (max-width: 1200px){
+
+    .navbar {
+        height: 60px;
+    }
     .item-flex { flex-direction: column-reverse;}
 
     .checkout{
