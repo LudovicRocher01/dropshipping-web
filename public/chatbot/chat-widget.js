@@ -1,7 +1,10 @@
 document.addEventListener("DOMContentLoaded", () => {
   const chatButton = document.createElement("div");
   chatButton.id = "chat-toggle";
-  chatButton.innerHTML = "💬";
+  chatButton.innerHTML = `
+    <span class="chat-button-text">Coach Kiné</span>
+    <img src="/images/coach_kine.jpg" alt="Coach Kiné" class="chat-avatar" />
+  `;
   document.body.appendChild(chatButton);
 
   const chatBox = document.createElement("div");
