@@ -54,7 +54,7 @@ paypal.Buttons({
                     <h1>🎉 Paiement validé !</h1>
                     <p>Merci pour votre achat. Votre code d'accès a été envoyé à : <strong>${clientEmail}</strong></p>
                     <h3>Votre code : <span style="color: #4CAF50;">${result.code}</span></h3>
-                    <p>Utilisez ce code sur <a href="https://osteozen.net/pdf-access.html">cette page</a> pour accéder au PDF.</p>
+                    <p>Utilisez ce code sur <a href="https://osteozen.net/pdf-access/pdf-access.html">cette page</a> pour accéder au PDF.</p>
                 </div>
             `;
         });

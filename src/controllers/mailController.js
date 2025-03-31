@@ -91,7 +91,7 @@ exports.envoyerCodeAccesPDF = async (email, accessCode) => {
               <h2 style="color: #4CAF50;">📄 Accès au PDF - La Mascarade Alimentaire</h2>
               <p>Merci pour votre achat ! Voici votre code d'accès :</p>
               <h2 style="background: #f3f3f3; padding: 10px; display: inline-block; border-radius: 5px;">${accessCode}</h2>
-              <p>Accédez à votre document en entrant ce code sur <a href="https://osteozen.net/pdf-access.html">cette page</a>.</p>
+              <p>Accédez à votre document en entrant ce code sur <a href="https://osteozen.net/pdf-access/pdf-access.html">cette page</a>.</p>
               <p>Si vous avez des questions, contactez-nous.</p>
               <p><strong>sosteopathe@gmail.com</strong></p>
           </div>

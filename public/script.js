@@ -402,6 +402,33 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
+fetch("/composants/navbar.html")
+  .then(res => res.text())
+  .then(html => {
+    document.getElementById("navbar-container").innerHTML = html;
+
+    const isIndex = window.location.pathname.endsWith("/") || window.location.pathname.endsWith("index.html");
+    const pageTitle = document.getElementById("page-title");
+
+    const vincent = document.querySelector(".nav-identity");
+    if (!isIndex && vincent) vincent.style.display = "none";
+
+    const homeIcon = document.getElementById("home-icon");
+    if (isIndex && homeIcon) homeIcon.style.display = "none";
+
+    if (pageTitle) {
+      if (window.location.pathname.includes("books.html")) {
+        pageTitle.textContent = "📚 Mes livres";
+      } else if (window.location.pathname.includes("health_products.html")) {
+        pageTitle.textContent = "🩺 Les produits de santé";
+      } else if (window.location.pathname.includes("sprays.html")) {
+        pageTitle.textContent = "🌿 Mes sprays d'huiles essentielles";
+      } else if (window.location.pathname.includes("conferences.html")) {
+        pageTitle.textContent = "🎓 Conférences et formations";
+      }
+    }
+  });
+
 
 fetch('/composants/footer.html')
 .then(response => response.text())
