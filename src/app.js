@@ -39,6 +39,7 @@ app.use('/api/formulaires', require('./routes/formulaires'));
 app.use('/api/paypal', require('./routes/paypal'));
 app.use('/api/pdf', require('./routes/pdf'));
 app.use('/api/chatbot', require('./routes/chatbot'));
+app.use('/api/chatbotFile', require('./routes/chatbotFile'))
 
 app.use((req, res) => {
     res.status(404).send("404 - Page non trouvée !");

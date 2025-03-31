@@ -1,96 +1,136 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const chatButton = document.createElement("div");
-    chatButton.id = "chat-toggle";
-    chatButton.innerHTML = "💬";
-    document.body.appendChild(chatButton);
-  
-    const chatBox = document.createElement("div");
-    chatBox.id = "chat-box";
-    chatBox.innerHTML = `
-      <div id="chat-header">🤖 Osteozen <span id="chat-close">×</span></div>
-      <div id="chat-messages"></div>
-      <form id="chat-form">
-        <input type="text" id="chat-input" placeholder="Posez votre question..." autocomplete="off" required />
-        <button type="submit">Envoyer</button>
-      </form>
-      <div id="chat-footer">
-      <button id="chat-clear">🗑 Effacer</button>
-      </div>
-    `;
-    document.body.appendChild(chatBox);
-  
-    const toggle = document.getElementById("chat-toggle");
-    const box = document.getElementById("chat-box");
-    const close = document.getElementById("chat-close");
-    const form = document.getElementById("chat-form");
-    const input = document.getElementById("chat-input");
-    const messages = document.getElementById("chat-messages");
-    const clear = document.getElementById("chat-clear");
-    clear.addEventListener("click", () => {
-      localStorage.removeItem("chatHistory");
-      messages.innerHTML = "";
-    });
+  const chatButton = document.createElement("div");
+  chatButton.id = "chat-toggle";
+  chatButton.innerHTML = "💬";
+  document.body.appendChild(chatButton);
 
-  
-    toggle.addEventListener("click", () => {
-      box.classList.toggle("open");
-    });
-  
-    close.addEventListener("click", () => {
-      box.classList.remove("open");
-    });
-  
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const userMessage = input.value.trim();
-      if (!userMessage) return;
-  
-      appendMessage("Vous", userMessage);
-      input.value = "";
-      appendMessage("Osteozen", "⏳ ...", false);
-  
-      try {
+  const chatBox = document.createElement("div");
+  chatBox.id = "chat-box";
+  chatBox.innerHTML = `
+  <div id="chat-header">
+  <div class="chat-title">
+    <img src="/images/coach_kine.jpg" alt="Coach Kiné" class="chat-avatar" />
+    <span>Mon coach Kiné</span>
+  </div>
+  <span id="chat-close">×</span>
+</div>
+    <div id="chat-messages"></div>
+
+    <form id="chat-form-upload" enctype="multipart/form-data">
+      <input type="text" id="chat-input-upload" placeholder="Posez votre question..." autocomplete="off" required />
+      <input type="file" id="chat-file-upload" accept=".pdf,.txt,.doc,.docx" />
+      <button type="submit">📎 Envoyer</button>
+    </form>
+
+    <div id="chat-footer">
+      <button id="chat-clear">🗑 Effacer</button>
+    </div>
+  `;
+  document.body.appendChild(chatBox);
+
+  const toggle = document.getElementById("chat-toggle");
+  const box = document.getElementById("chat-box");
+  const close = document.getElementById("chat-close");
+  const messages = document.getElementById("chat-messages");
+  const clear = document.getElementById("chat-clear");
+
+  clear.addEventListener("click", () => {
+    localStorage.removeItem("chatHistory");
+    messages.innerHTML = "";
+  });
+
+  toggle.addEventListener("click", () => {
+    box.classList.toggle("open");
+    if (box.classList.contains("open")) {
+      localStorage.setItem("chatClosed", "false");
+    }
+  });
+
+  close.addEventListener("click", () => {
+    box.classList.remove("open");
+    localStorage.setItem("chatClosed", "true");
+  });
+
+  const unifiedForm = document.getElementById("chat-form-upload");
+  const unifiedInput = document.getElementById("chat-input-upload");
+  const unifiedFile = document.getElementById("chat-file-upload");
+
+  unifiedForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const messageText = unifiedInput.value.trim();
+    const file = unifiedFile.files[0];
+    if (!messageText) return;
+
+    const fileLabel = file ? ` (📎 ${file.name})` : "";
+    appendMessage("Vous", messageText + fileLabel);
+    appendMessage("Coach Kiné", "⏳ Traitement en cours...", false);
+
+    try {
+      if (file) {
+        const formData = new FormData();
+        formData.append("message", messageText);
+        formData.append("document", file);
+
+        const res = await fetch("/api/chatbotfile", {
+          method: "POST",
+          body: formData
+        });
+
+        const data = await res.json();
+        messages.lastChild.remove();
+        appendMessage("Coach Kiné", data.reply || "Réponse vide.");
+      } else {
         const res = await fetch("/api/chatbot", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: userMessage })
+          body: JSON.stringify({ message: messageText })
         });
-  
+
         const data = await res.json();
         messages.lastChild.remove();
-        appendMessage("Osteozen", data.reply);
-      } catch (err) {
-        messages.lastChild.remove();
-        appendMessage("Osteozen", "❌ Une erreur est survenue.");
+        appendMessage("Coach Kiné", data.reply || "Réponse vide.");
       }
-    });
-  
-    function appendMessage(sender, text, save = true) {
-      const msg = document.createElement("div");
-      msg.className = `chat-message ${sender === "Vous" ? "user" : "bot"}`;
-      msg.innerHTML = `<strong>${sender} :</strong> ${text}`;
-      messages.appendChild(msg);
-      messages.scrollTop = messages.scrollHeight;
-    
-      if (save) {
-        const history = JSON.parse(localStorage.getItem("chatHistory")) || [];
-        history.push({ sender, text });
-        localStorage.setItem("chatHistory", JSON.stringify(history));
-      }
+    } catch (err) {
+      messages.lastChild.remove();
+      console.error(err);
+      appendMessage("Coach Kiné", "❌ Le format du fichier n’est pas pris en charge. Utilisez un PDF, DOC ou TXT.");
+
     }
-    
 
-    function loadChatHistory() {
-      const messages = JSON.parse(localStorage.getItem("chatHistory")) || [];
-      messages.forEach(({ sender, text }) => appendMessage(sender, text, false));
-    }    
-
-    loadChatHistory();
-
-    const chatHistory = JSON.parse(localStorage.getItem("chatHistory")) || [];
-
-    if (chatHistory.length === 0) {
-      appendMessage("Osteozen", "Bonjour, je suis coach Osteozen et je me charge de répondre à toutes vos questions sur les entorses, les tendinites ou tout autre problème de santé qui nécessite de la kinésithérapie.", false);
-    }
+    unifiedInput.value = "";
+    unifiedFile.value = "";
   });
-  
+
+  function appendMessage(sender, text, save = true) {
+    const msg = document.createElement("div");
+    msg.className = `chat-message ${sender === "Vous" ? "user" : "bot"}`;
+    msg.innerHTML = `<strong>${sender} :</strong> ${text}`;
+    messages.appendChild(msg);
+    messages.scrollTop = messages.scrollHeight;
+
+    if (save) {
+      const history = JSON.parse(localStorage.getItem("chatHistory")) || [];
+      history.push({ sender, text });
+      localStorage.setItem("chatHistory", JSON.stringify(history));
+    }
+  }
+
+  function loadChatHistory() {
+    const history = JSON.parse(localStorage.getItem("chatHistory")) || [];
+    history.forEach(({ sender, text }) => appendMessage(sender, text, false));
+  }
+
+  loadChatHistory();
+
+  const isIndexPage = window.location.pathname === "/" || window.location.pathname.includes("index.html");
+  const wasManuallyClosed = localStorage.getItem("chatClosed") === "true";
+
+  if (isIndexPage && !wasManuallyClosed) {
+    box.classList.add("open");
+  }
+
+  const chatHistory = JSON.parse(localStorage.getItem("chatHistory")) || [];
+  if (chatHistory.length === 0) {
+    appendMessage("Coach Kiné", "Bonjour, je suis un coach Kiné et je me charge de répondre à toutes vos questions sur les entorses, les tendinites ou tout autre problème de santé qui nécessite de la kinésithérapie. Vous avez des douleurs ? Nous pouvons en parler...", false);
+  }
+});

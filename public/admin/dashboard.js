@@ -92,7 +92,6 @@ async function modifierProduit(id) {
     formData.append("description", description);
     formData.append("categorie", categorie);
 
-    // Ajout des valeurs uniquement si elles existent
     if (prixElement) {
         formData.append("prix", prixElement.value);
     }
