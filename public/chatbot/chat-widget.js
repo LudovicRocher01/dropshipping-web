@@ -66,6 +66,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const fileLabel = file ? ` (📎 ${file.name})` : "";
     appendMessage("Vous", messageText + fileLabel);
+    unifiedInput.value = "";
+    unifiedFile.value = "";
     appendMessage("Coach Kiné", "⏳ Traitement en cours...", false);
 
     try {
@@ -134,6 +136,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const chatHistory = JSON.parse(localStorage.getItem("chatHistory")) || [];
   if (chatHistory.length === 0) {
-    appendMessage("Coach Kiné", "Bonjour, je suis un coach Kiné et je me charge de répondre à toutes vos questions sur les entorses, les tendinites ou tout autre problème de santé qui nécessite de la kinésithérapie. Vous avez des douleurs ? Nous pouvons en parler...", false);
+    appendMessage("Coach Kiné", "Bonjour, je suis coach Kiné, assistant virtuel de Vincent. Je ne remplace pas une consultation  mais je peux répondre à pas mal de vos questions. On discute ?", false);
   }
 });
