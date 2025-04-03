@@ -17,10 +17,10 @@
 
 #chat-box {
   position: fixed;
-  bottom: 80px;
-  right: 20px;
-  width: 400px;
-  max-height: 600px;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
   background: white;
   border: 1px solid #ccc;
   border-radius: 10px;
@@ -55,7 +55,7 @@
 
 #chat-close {
   cursor: pointer;
-  font-size: 18px;
+  font-size: 40px;
 }
 
 .chat-avatar {
@@ -127,6 +127,22 @@
 
 .chat-message.bot {
   text-align: left;
+}
+
+.chat-notification-bubble {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: red;
+  color: white;
+  font-size: 12px;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
 }
 
 @media screen and (max-width: 600px) {

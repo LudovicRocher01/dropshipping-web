@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
   chatButton.innerHTML = `
     <span class="chat-button-text">Coach Kiné</span>
     <img src="/images/coach_kine.jpg" alt="Coach Kiné" class="chat-avatar" />
+    <span id="chat-notification" class="chat-notification-bubble">1</span>
   `;
   document.body.appendChild(chatButton);
 
@@ -40,12 +41,22 @@ document.addEventListener("DOMContentLoaded", () => {
   clear.addEventListener("click", () => {
     localStorage.removeItem("chatHistory");
     messages.innerHTML = "";
+    appendMessage("Coach Kiné", "Bonjour, je suis coach Kiné, assistant virtuel de Vincent. Je ne remplace pas une consultation  mais je peux répondre à pas mal de vos questions. On discute ?", false);
   });
+
+  const notif = document.getElementById("chat-notification");
+  
+  if (box.classList.contains("open")) {
+    notif.style.display = "none";
+  } else {
+    notif.style.display = "flex";
+  }
 
   toggle.addEventListener("click", () => {
     box.classList.toggle("open");
     if (box.classList.contains("open")) {
       localStorage.setItem("chatClosed", "false");
+      notif.style.display = "none";
     }
   });
 
@@ -126,13 +137,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   loadChatHistory();
-
-  const isIndexPage = window.location.pathname === "/" || window.location.pathname.includes("index.html");
-  const wasManuallyClosed = localStorage.getItem("chatClosed") === "true";
-
-  if (isIndexPage && !wasManuallyClosed) {
-    box.classList.add("open");
-  }
 
   const chatHistory = JSON.parse(localStorage.getItem("chatHistory")) || [];
   if (chatHistory.length === 0) {
