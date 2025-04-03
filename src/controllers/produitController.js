@@ -2,7 +2,7 @@ const db = require('../models/db');
 const validator = require("validator");
 
 exports.getProduits = (req, res) => {
-    db.query('SELECT * FROM produits', (err, results) => {
+    db.query('SELECT * FROM produits ORDER BY FIELD(categorie, "spray", "livre", "sante", "conference"), ordre ASC, id ASC', (err, results) => {
         if (err) {
             console.error('Erreur lors de la récupération des produits:', err);
             return res.status(500).json({ error: 'Erreur serveur' });
@@ -10,6 +10,7 @@ exports.getProduits = (req, res) => {
         res.json(results);
     });
 };
+
 
 exports.addProduit = (req, res) => {
     const { nom, description, prix, lien_achat, categorie } = req.body;
@@ -48,7 +49,7 @@ exports.addProduit = (req, res) => {
 
 
 exports.updateProduit = (req, res) => {
-    const { nom, description, prix, lien_achat } = req.body;
+    const { nom, description, prix, lien_achat, ordre } = req.body;
     const { id } = req.params;
     const image_url = req.file ? `/uploads/${req.file.filename}` : req.body.image_url;
 
@@ -66,11 +67,13 @@ exports.updateProduit = (req, res) => {
         let sql, params;
 
         if (categorie === 'conference') {
-            sql = 'UPDATE produits SET nom=?, description=?, image_url=? WHERE id=?';
-            params = [nom, description, image_url, id];
+            sql = 'UPDATE produits SET nom=?, description=?, image_url=?, ordre=? WHERE id=?';
+            params = [nom, description, image_url, ordre || 0, id];
+
         } else {
-            sql = 'UPDATE produits SET nom=?, description=?, prix=?, lien_achat=?, image_url=? WHERE id=?';
-            params = [nom, description, prix || null, lien_achat || null, image_url, id];
+            sql = 'UPDATE produits SET nom=?, description=?, prix=?, lien_achat=?, image_url=?, ordre=? WHERE id=?';
+            params = [nom, description, prix || null, lien_achat || null, image_url, ordre || 0, id];
+
         }
 
         db.query(sql, params, (err) => {

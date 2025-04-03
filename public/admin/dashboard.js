@@ -56,6 +56,7 @@ async function chargerProduits() {
                     ? "-"
                     : `<input type="text" value="${produit.lien_achat}" id="lien-${produit.id}">`}
                 </td>
+                <td><input type="number" value="${produit.ordre}" id="ordre-${produit.id}" style="width: 60px;"></td>
                 <td>
                     <button onclick="modifierProduit(${produit.id})">Modifier</button>
                     <button onclick="supprimerProduit(${produit.id})" style="color:red;">Supprimer</button>
@@ -81,6 +82,7 @@ async function modifierProduit(id) {
     const nom = document.getElementById(`nom-${id}`).value;
     const description = document.getElementById(`desc-${id}`).value;
     const prixElement = document.getElementById(`prix-${id}`);
+    const ordreElement = document.getElementById(`ordre-${id}`);
     const lienAchatElement = document.getElementById(`lien-${id}`);
     const imageInput = document.getElementById(`image-${id}`).files[0];
     const currentImage = document.getElementById(`image-${id}`).dataset.currentImage;
@@ -98,6 +100,7 @@ async function modifierProduit(id) {
     if (lienAchatElement) {
         formData.append("lien_achat", lienAchatElement.value);
     }
+    formData.append("ordre", ordreElement.value);
 
     if (imageInput) {
         formData.append("image", imageInput);
