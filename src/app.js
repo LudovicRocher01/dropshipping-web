@@ -8,6 +8,7 @@ const cookieParser = require("cookie-parser");
 const fs = require('fs')
 const logStream = fs.createWriteStream(path.join(__dirname, 'access.log'), { flags: 'a' });
 const favicon = require('serve-favicon');
+const session = require("express-session");
 
 app.use(favicon(path.join(__dirname, '../public/images', 'favicon.ico')));
 
@@ -26,6 +27,18 @@ app.use((req, res, next) => {
 
 app.use(express.json());
 app.use(cookieParser());
+
+app.use(
+    session({
+      secret: process.env.SESSION_SECRET,
+      resave: false,
+      saveUninitialized: true,
+      cookie: {
+        secure: false,
+        maxAge: 1000 * 60 * 60 * 24
+      }
+    })
+  );
 
 const authRoutes = require("./routes/auth").router;
 app.use("/api/auth", authRoutes);
