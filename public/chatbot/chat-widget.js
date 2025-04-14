@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     <form id="chat-form-upload" enctype="multipart/form-data">
       <input type="text" id="chat-input-upload" placeholder="Posez votre question..." autocomplete="off" required />
-      <input type="file" id="chat-file-upload"" />
+      <input type="file" id="chat-file-upload" multiple/>
       <button type="submit">📎 Envoyer</button>
     </form>
 
@@ -72,26 +72,26 @@ document.addEventListener("DOMContentLoaded", () => {
   unifiedForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const messageText = unifiedInput.value.trim();
-    const file = unifiedFile.files[0];
+    const files = Array.from(unifiedFile.files);
     if (!messageText) return;
 
-    const fileLabel = file ? ` (📎 ${file.name})` : "";
+    const fileLabel = files.length > 0 ? ` (📎 ${files.map(f => f.name).join(", ")})` : "";
+
     appendMessage("Vous", messageText + fileLabel);
     unifiedInput.value = "";
     unifiedFile.value = "";
     appendMessage("Coach Kiné", "⏳ Traitement en cours...", false);
 
     try {
-      if (file) {
+      if (files) {
         const formData = new FormData();
         formData.append("message", messageText);
-        formData.append("document", file);
-  
-        const imageFormats = ["image/png", "image/jpeg", "image/jpg", "image/webp", "image/gif"];
-  
-        const route = imageFormats.includes(file.type)
-          ? "/api/chatbotImage"
-          : "/api/chatbotfile";
+        files.forEach(file => {
+          formData.append("documents", file);
+        });
+    
+        const allAreImages = files.every(file => file.type.startsWith("image/"));
+        const route = allAreImages ? "/api/chatbotImage" : "/api/chatbotfile";
   
         const res = await fetch(route, {
           method: "POST",

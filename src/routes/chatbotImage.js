@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
-const { handleChatWithImage } = require('../controllers/chatbotImageController');
+const { handleChatWithMultipleFiles } = require('../controllers/chatbotImageController');
 
 const storage = multer.diskStorage({
   destination: 'uploads/',
@@ -13,6 +13,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-router.post('/', upload.single('document'), handleChatWithImage);
+router.post('/', upload.array("documents"), handleChatWithMultipleFiles);
 
 module.exports = router;
