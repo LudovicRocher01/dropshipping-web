@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     <form id="chat-form-upload" enctype="multipart/form-data">
       <input type="text" id="chat-input-upload" placeholder="Posez votre question..." autocomplete="off" required />
-      <input type="file" id="chat-file-upload" accept=".pdf,.txt,.doc,.docx" />
+      <input type="file" id="chat-file-upload"" />
       <button type="submit">📎 Envoyer</button>
     </form>
 
@@ -86,8 +86,14 @@ document.addEventListener("DOMContentLoaded", () => {
         const formData = new FormData();
         formData.append("message", messageText);
         formData.append("document", file);
-
-        const res = await fetch("/api/chatbotfile", {
+  
+        const imageFormats = ["image/png", "image/jpeg", "image/jpg", "image/webp", "image/gif"];
+  
+        const route = imageFormats.includes(file.type)
+          ? "/api/chatbotImage"
+          : "/api/chatbotfile";
+  
+        const res = await fetch(route, {
           method: "POST",
           body: formData
         });
@@ -109,8 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (err) {
       messages.lastChild.remove();
       console.error(err);
-      appendMessage("Coach Kiné", "❌ Le format du fichier n’est pas pris en charge. Utilisez un PDF, DOC ou TXT.");
-
+      appendMessage("Coach Kiné", "❌ Une erreur est survenue lors du traitement de votre demande.");
     }
 
     unifiedInput.value = "";
