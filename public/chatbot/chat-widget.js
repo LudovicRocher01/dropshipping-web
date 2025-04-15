@@ -73,23 +73,26 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault();
     const messageText = unifiedInput.value.trim();
     const files = Array.from(unifiedFile.files);
-    if (!messageText) return;
-
+  
+    if (!messageText && files.length === 0) return;
+  
     const fileLabel = files.length > 0 ? ` (📎 ${files.map(f => f.name).join(", ")})` : "";
-
     appendMessage("Vous", messageText + fileLabel);
     unifiedInput.value = "";
     unifiedFile.value = "";
     appendMessage("Coach Kiné", "⏳ Traitement en cours...", false);
-
+  
     try {
-      if (files) {
+      let data;
+  
+      if (files.length > 0) {
         const formData = new FormData();
         formData.append("message", messageText);
+  
         files.forEach(file => {
           formData.append("documents", file);
         });
-    
+  
         const allAreImages = files.every(file => file.type.startsWith("image/"));
         const route = allAreImages ? "/api/chatbotImage" : "/api/chatbotfile";
   
@@ -97,30 +100,30 @@ document.addEventListener("DOMContentLoaded", () => {
           method: "POST",
           body: formData
         });
-
-        const data = await res.json();
-        messages.lastChild.remove();
-        appendMessage("Coach Kiné", data.reply || "Réponse vide.");
-      } else {
+  
+        data = await res.json();
+      } 
+      else {
         const res = await fetch("/api/chatbot", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ message: messageText })
         });
-
-        const data = await res.json();
-        messages.lastChild.remove();
-        appendMessage("Coach Kiné", data.reply || "Réponse vide.");
+  
+        data = await res.json();
       }
+  
+      messages.lastChild.remove();
+      appendMessage("Coach Kiné", data.reply || "Réponse vide.");
     } catch (err) {
       messages.lastChild.remove();
       console.error(err);
       appendMessage("Coach Kiné", "❌ Une erreur est survenue lors du traitement de votre demande.");
     }
-
+  
     unifiedInput.value = "";
     unifiedFile.value = "";
-  });
+  });  
 
   function appendMessage(sender, text, save = true) {
     const msg = document.createElement("div");

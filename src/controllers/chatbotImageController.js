@@ -46,7 +46,6 @@ exports.handleChatWithMultipleFiles = async (req, res) => {
     do {
       await new Promise(resolve => setTimeout(resolve, 1000));
       runStatus = await openai.beta.threads.runs.retrieve(threadId, run.id);
-      console.log("🔍 Run Status :", runStatus.status);
     } while (runStatus.status !== "completed" && runStatus.status !== "failed");    
 
     if (runStatus.status === "failed") {
