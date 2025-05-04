@@ -53,6 +53,7 @@ async function afficherProduits(categorie) {
                         <div class="left">
                             <div class="details">
                                 <h1>${produit.nom}</h1>
+                                ${getAudioPlayer(produit)}
                                 ${prixDisplay}
                             </div>
                             <div class="buy">${actionButton}</div>
@@ -364,6 +365,21 @@ function fermerModal(event) {
     }
 }
 
+function getAudioPlayer(produit) {
+    const src = audioMap[produit.id];
+    if (produit.categorie === "livre" && src) {
+      return `
+        <div class="audio-player">
+          <audio controls preload="none">
+            <source src="${src}" type="audio/mpeg">
+            Votre navigateur ne supporte pas la balise audio.
+          </audio>
+        </div>
+      `;
+    }
+    return "";
+}  
+
 document.addEventListener("DOMContentLoaded", () => {
     const page = getCurrentPage();
 
@@ -498,3 +514,9 @@ function attacherEvenementsFooter() {
         }
     });
 }
+
+const audioMap = {
+    48: "/media/audio/podcast_face_cachee_ame.mp3",
+    50: "/media/audio/podcast_face_cachee_etre.mp3",
+    66: "/media/audio/podcast_mascarade.mp3"
+  };
