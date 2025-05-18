@@ -145,6 +145,30 @@
   font-weight: bold;
 }
 
+.chat-text {
+  margin-top: 5px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.chat-text h1,
+.chat-text h2,
+.chat-text h3 {
+  margin: 10px 0 5px;
+  font-weight: bold;
+  color: #3e8ed0;
+}
+
+.chat-text p {
+  margin: 5px 0;
+}
+
+.chat-text ul, .chat-text ol {
+  margin: 5px 0 5px 20px;
+  padding-left: 10px;
+}
+
 @media screen and (max-width: 600px) {
   #chat-box {
     width: 95vw;

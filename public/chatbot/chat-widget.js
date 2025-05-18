@@ -125,19 +125,23 @@ document.addEventListener("DOMContentLoaded", () => {
     unifiedFile.value = "";
   });  
 
-  function appendMessage(sender, text, save = true) {
-    const msg = document.createElement("div");
-    msg.className = `chat-message ${sender === "Vous" ? "user" : "bot"}`;
-    msg.innerHTML = `<strong>${sender} :</strong> ${text}`;
-    messages.appendChild(msg);
-    messages.scrollTop = messages.scrollHeight;
+function appendMessage(sender, text, save = true) {
+  const msg = document.createElement("div");
+  msg.className = `chat-message ${sender === "Vous" ? "user" : "bot"}`;
+  msg.innerHTML = `
+    <strong>${sender} :</strong>
+    <div class="chat-text">${text}</div>
+  `;
+  messages.appendChild(msg);
+  messages.scrollTop = messages.scrollHeight;
 
-    if (save) {
-      const history = JSON.parse(localStorage.getItem("chatHistory")) || [];
-      history.push({ sender, text });
-      localStorage.setItem("chatHistory", JSON.stringify(history));
-    }
+  if (save) {
+    const history = JSON.parse(localStorage.getItem("chatHistory")) || [];
+    history.push({ sender, text });
+    localStorage.setItem("chatHistory", JSON.stringify(history));
   }
+}
+
 
   function loadChatHistory() {
     const history = JSON.parse(localStorage.getItem("chatHistory")) || [];
