@@ -2,8 +2,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const chatButton = document.createElement("div");
   chatButton.id = "chat-toggle";
   chatButton.innerHTML = `
-    <span class="chat-button-text">Coach Kiné</span>
-    <img src="/images/coach_kine.jpg" alt="Coach Kiné" class="chat-avatar" />
+    <span class="chat-button-text">Coach AI</span>
+    <img src="/images/coach_kine.jpg" alt="Coach AI" class="chat-avatar" />
     <span id="chat-notification" class="chat-notification-bubble">1</span>
   `;
   document.body.appendChild(chatButton);
@@ -13,8 +13,8 @@ document.addEventListener("DOMContentLoaded", () => {
   chatBox.innerHTML = `
   <div id="chat-header">
   <div class="chat-title">
-    <img src="/images/coach_kine.jpg" alt="Coach Kiné" class="chat-avatar" />
-    <span>Mon coach Kiné</span>
+    <img src="/images/coach_kine.jpg" alt="Coach AI" class="chat-avatar" />
+    <span>Mon coach AI</span>
   </div>
   <span id="chat-close">×</span>
 </div>
@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
   clear.addEventListener("click", () => {
     localStorage.removeItem("chatHistory");
     messages.innerHTML = "";
-    appendMessage("Coach Kiné", "Bonjour, je suis coach Kiné, assistant virtuel de Vincent. Je ne remplace pas une consultation  mais je peux répondre à pas mal de vos questions. On discute ?", false);
+    appendMessage("Coach AI", "Bonjour, je suis coach AI, assistant virtuel de Vincent. Je ne remplace pas une consultation mais je peux répondre à pas mal de vos questions. On discute ?", false);
   });
 
   const notif = document.getElementById("chat-notification");
@@ -80,7 +80,7 @@ document.addEventListener("DOMContentLoaded", () => {
     appendMessage("Vous", messageText + fileLabel);
     unifiedInput.value = "";
     unifiedFile.value = "";
-    appendMessage("Coach Kiné", "⏳ Traitement en cours...", false);
+    appendMessage("Coach AI", "⏳ Traitement en cours...", false);
   
     try {
       let data;
@@ -114,11 +114,11 @@ document.addEventListener("DOMContentLoaded", () => {
       }
   
       messages.lastChild.remove();
-      appendMessage("Coach Kiné", data.reply || "Réponse vide.");
+      appendMessage("Coach AI", data.reply || "Réponse vide.");
     } catch (err) {
       messages.lastChild.remove();
       console.error(err);
-      appendMessage("Coach Kiné", "❌ Une erreur est survenue lors du traitement de votre demande.");
+      appendMessage("Coach AI", "❌ Une erreur est survenue lors du traitement de votre demande.");
     }
   
     unifiedInput.value = "";
@@ -152,6 +152,6 @@ function appendMessage(sender, text, save = true) {
 
   const chatHistory = JSON.parse(localStorage.getItem("chatHistory")) || [];
   if (chatHistory.length === 0) {
-    appendMessage("Coach Kiné", "Bonjour, je suis coach Kiné, assistant virtuel de Vincent. Je ne remplace pas une consultation  mais je peux répondre à pas mal de vos questions. On discute ?", false);
+    appendMessage("Coach AI", "Bonjour, je suis coach AI, assistant virtuel de Vincent. Je ne remplace pas une consultation mais je peux répondre à pas mal de vos questions. On discute ?", false);
   }
 });
