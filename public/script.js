@@ -403,6 +403,36 @@ document.addEventListener("DOMContentLoaded", () => {
             afficherPanier();
         });
     }
+
+    const dreamTile = document.getElementById("dream-machine-tile");
+    const lightbox = document.getElementById("lightbox-modal");
+    const lightboxImg = document.getElementById("lightbox-img");
+    const closeBtn = document.querySelector(".close-lightbox");
+
+    if (dreamTile && lightbox && lightboxImg) {
+        // Au clic sur la tuile
+        dreamTile.addEventListener("click", (e) => {
+            e.preventDefault(); // Empêche le lien # de s'activer
+            
+            // Récupère l'image à l'intérieur de la tuile
+            const imgSource = dreamTile.querySelector("img").src;
+            
+            lightbox.style.display = "block";
+            lightboxImg.src = imgSource;
+        });
+
+        // Au clic sur la croix de fermeture
+        closeBtn.addEventListener("click", () => {
+            lightbox.style.display = "none";
+        });
+
+        // Au clic en dehors de l'image (sur le fond noir)
+        lightbox.addEventListener("click", (e) => {
+            if (e.target === lightbox) {
+                lightbox.style.display = "none";
+            }
+        });
+    }
 });
 
 document.addEventListener("DOMContentLoaded", () => {
