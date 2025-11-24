@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OSTEOZEN - Paiement</title>
+    <title>OSTEOZEN - Paiement Sécurisé</title>
     <link rel="stylesheet" href="paiement.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
@@ -12,48 +13,53 @@
 </head>
 <body>
 
-<div id="loading-overlay">
-    <div class="loading-spinner"></div>
-    <p>Traitement en cours... Veuillez patienter</p>
-</div>
+    <div id="loading-overlay">
+        <div class="loading-spinner"></div>
+        <p>Traitement de votre commande...</p>
+    </div>
 
-    
     <nav class="navbar">
         <div class="nav-container">
-            <a href="../index.html" class="home-link" id="home-icon" title="Retour à l'accueil">
-                <i class="fas fa-home"></i>
+            <a href="../index.html" class="home-link" title="Retour à l'accueil">
+                <i class="fas fa-arrow-left"></i> Retour boutique
             </a>
         </div>
     </nav>
 
     <main class="container">
-        <h1 class="heading">
-            <ion-icon name="card-outline"></ion-icon> Paiement sécurisé
-        </h1>
+        <h1 class="page-heading">Paiement sécurisé</h1>
 
-        <div class="item-flex">
-            <section class="checkout">
-                <h2 class="section-heading">Confirmer et payer</h2>
-                <div id="paypal-button-container"></div>
+        <div class="checkout-grid">
+            <section class="cart-section">
+                <h2 class="section-title">Résumé de la commande</h2>
+                
+                <div id="paiement-container" class="product-list">
+                    <p>Chargement du panier...</p>
+                </div>
+
+                <div class="totals">
+                    <div class="line">
+                        <span>Sous-total : </span>
+                        <span id="subtotal">0.00</span> €
+                    </div>
+                    <div class="line">
+                        <span>Livraison : </span>
+                        <span id="shipping">0.00</span> €
+                    </div>
+                    <div class="line total-line">
+                        <span>Total à payer : </span>
+                        <span class="total-price"><span id="total">0.00</span> €</span>
+                    </div>
+                </div>
             </section>
 
-            <section class="cart">
-                <div class="cart-item-box" id="paiement-container">
-                    <h2 class="section-heading">Détails de votre commande</h2>
-                    <p>Chargement...</p>
+            <section class="payment-section">
+                <h2 class="section-title">Choisir le moyen de paiement</h2>
+                <div class="payment-wrapper">
+                    <div id="paypal-button-container"></div>
                 </div>
-                <div class="wrapper">
-                    <div class="amount">
-                        <div class="subtotal">
-                            <span>Sous-total</span> <span>€ <span id="subtotal">0.00</span></span>
-                        </div>
-                        <div class="shipping">
-                            <span>Livraison</span> <span>€ <span id="shipping">0.00</span></span>
-                        </div>
-                        <div class="total">
-                            <span>Total</span> <span>€ <span id="total">0.00</span></span>
-                        </div>
-                    </div>
+                <div class="security-badge">
+                    <i class="fas fa-lock"></i> Paiement 100% Sécurisé via PayPal (Compte ou CB)
                 </div>
             </section>
         </div>

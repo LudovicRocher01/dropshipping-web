@@ -464,13 +464,13 @@ fetch("/composants/navbar.html")
 
     if (pageTitle) {
       if (window.location.pathname.includes("books.html")) {
-        pageTitle.textContent = "📚 Mes livres";
+        pageTitle.innerHTML = '<i class="fas fa-book"></i> Mes livres';
       } else if (window.location.pathname.includes("health_products.html")) {
-        pageTitle.textContent = "🩺 Les produits de santé";
+        pageTitle.innerHTML = '<i class="fas fa-heartbeat"></i> Les produits de santé';
       } else if (window.location.pathname.includes("sprays.html")) {
-        pageTitle.textContent = "🌿 Mes sprays d'huiles essentielles";
+        pageTitle.innerHTML = '<i class="fas fa-leaf"></i> Mes sprays d\'huiles essentielles';
       } else if (window.location.pathname.includes("conferences.html")) {
-        pageTitle.textContent = "🎓 Conférences et formations";
+        pageTitle.innerHTML = '<i class="fas fa-graduation-cap"></i> Conférences et formations';
       }
     }
   });

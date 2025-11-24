@@ -6,29 +6,46 @@ document.addEventListener("DOMContentLoaded", () => {
     <img src="/images/coach_kine.jpg" alt="Coach AI" class="chat-avatar" />
     <span id="chat-notification" class="chat-notification-bubble">1</span>
   `;
-  document.body.appendChild(chatButton);
+  const footerContactDiv = document.querySelector('.footer-contact');
+  
+  if (footerContactDiv) {
+      footerContactDiv.appendChild(chatButton);
+      footerContactDiv.classList.add('mobile-buttons-container');
+  } else {
+      document.body.appendChild(chatButton);
+  }
 
   const chatBox = document.createElement("div");
   chatBox.id = "chat-box";
   chatBox.innerHTML = `
   <div id="chat-header">
-  <div class="chat-title">
-    <img src="/images/coach_kine.jpg" alt="Coach AI" class="chat-avatar" />
-    <span>Mon coach AI</span>
+    <div class="chat-title">
+      <img src="/images/coach_kine.jpg" alt="Coach AI" class="chat-avatar" />
+      <span>Mon coach AI</span>
+    </div>
+    <div class="header-controls">
+        <button id="chat-clear"><i class="fas fa-trash-alt"></i> Effacer</button>
+        <span id="chat-close">&times;</span>
+    </div>
   </div>
-  <span id="chat-close">×</span>
-</div>
     <div id="chat-messages"></div>
 
-    <form id="chat-form-upload" enctype="multipart/form-data">
-      <input type="text" id="chat-input-upload" placeholder="Posez votre question..." autocomplete="off" required />
-      <input type="file" id="chat-file-upload" multiple/>
-      <button type="submit">📎 Envoyer</button>
-    </form>
-
-    <div id="chat-footer">
-      <button id="chat-clear">🗑 Effacer</button>
+    <div id="file-preview-container" style="display:none;">
+        <span id="file-name-display"></span>
+        <span id="remove-file" title="Supprimer le fichier">&times;</span>
     </div>
+
+    <form id="chat-form-upload" enctype="multipart/form-data">
+      <label for="chat-file-upload" id="file-btn" title="Joindre un fichier">
+        <i class="fas fa-paperclip"></i>
+      </label>
+      
+      <input type="file" id="chat-file-upload" multiple style="display: none;" />
+      
+      <input type="text" id="chat-input-upload" placeholder="Posez votre question..." autocomplete="off" required />
+      
+      <button type="submit">Envoyer <i class="fas fa-paper-plane" style="margin-left:5px;"></i></button>
+    </form>
   `;
   document.body.appendChild(chatBox);
 
@@ -37,14 +54,33 @@ document.addEventListener("DOMContentLoaded", () => {
   const close = document.getElementById("chat-close");
   const messages = document.getElementById("chat-messages");
   const clear = document.getElementById("chat-clear");
+  const notif = document.getElementById("chat-notification");
+
+  const unifiedFile = document.getElementById("chat-file-upload");
+  const filePreview = document.getElementById("file-preview-container");
+  const fileNameDisplay = document.getElementById("file-name-display");
+  const removeFileBtn = document.getElementById("remove-file");
+
+  unifiedFile.addEventListener("change", () => {
+    if (unifiedFile.files.length > 0) {
+        filePreview.style.display = "flex";
+        const names = Array.from(unifiedFile.files).map(f => f.name).join(", ");
+        fileNameDisplay.textContent = names;
+    } else {
+        filePreview.style.display = "none";
+    }
+  });
+
+  removeFileBtn.addEventListener("click", () => {
+    unifiedFile.value = "";
+    filePreview.style.display = "none";
+  });
 
   clear.addEventListener("click", () => {
     localStorage.removeItem("chatHistory");
     messages.innerHTML = "";
     appendMessage("Coach AI", "Bonjour, je suis coach AI, assistant virtuel de Vincent. Je ne remplace pas une consultation mais je peux répondre à pas mal de vos questions. On discute ?", false);
   });
-
-  const notif = document.getElementById("chat-notification");
   
   if (box.classList.contains("open")) {
     notif.style.display = "none";
@@ -67,7 +103,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const unifiedForm = document.getElementById("chat-form-upload");
   const unifiedInput = document.getElementById("chat-input-upload");
-  const unifiedFile = document.getElementById("chat-file-upload");
 
   unifiedForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -78,8 +113,11 @@ document.addEventListener("DOMContentLoaded", () => {
   
     const fileLabel = files.length > 0 ? ` (📎 ${files.map(f => f.name).join(", ")})` : "";
     appendMessage("Vous", messageText + fileLabel);
+    
     unifiedInput.value = "";
     unifiedFile.value = "";
+    filePreview.style.display = "none"; // Cacher la preview après envoi
+
     appendMessage("Coach AI", "⏳ Traitement en cours...", false);
   
     try {
@@ -120,9 +158,6 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error(err);
       appendMessage("Coach AI", "❌ Une erreur est survenue lors du traitement de votre demande.");
     }
-  
-    unifiedInput.value = "";
-    unifiedFile.value = "";
   });  
 
 function appendMessage(sender, text, save = true) {

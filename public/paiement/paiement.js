@@ -8,7 +8,7 @@ async function afficherPanier() {
     container.innerHTML = "";
 
     if (panier.length === 0) {
-        container.innerHTML = "<p>Votre panier est vide. Retournez choisir des produits.</p>";
+        container.innerHTML = "<p>Votre panier est vide.</p>";
         return;
     }
 
@@ -21,16 +21,14 @@ async function afficherPanier() {
         let produitDiv = document.createElement("div");
         produitDiv.classList.add("product-card");
         produitDiv.innerHTML = `
-        <div class="card">
-            <img src="${produit.image}" width="80px" alt="${produit.nom}" class="product-img">
-            <div class="product-info">
-                <span class="product-name">${produit.nom}</span>
-                <div class="product-qty">
-                    <span>Quantité: ${produit.quantite}</span>
+            <div class="card-left">
+                <img src="${produit.image}" alt="${produit.nom}" class="product-img">
+                <div class="product-info">
+                    <span class="product-name">${produit.nom}</span>
+                    <span class="product-qty">Quantité: ${produit.quantite}</span>
                 </div>
-                <span class="product-price">${(produit.prix * produit.quantite).toFixed(2)} €</span>
             </div>
-            </div>
+            <span class="product-price">${(produit.prix * produit.quantite).toFixed(2)} €</span>
         `;
         container.appendChild(produitDiv);
     });
