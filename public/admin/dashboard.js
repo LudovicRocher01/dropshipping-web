@@ -29,6 +29,11 @@ async function chargerProduits() {
         const response = await fetch("/api/produits");
         const produits = await response.json();
 
+        if (!Array.isArray(produits)) {
+            console.warn("Réponse inattendue pour les produits :", produits);
+            return;
+        }
+
         const tableBody = document.getElementById("produits-table");
         tableBody.innerHTML = "";
 
@@ -46,28 +51,23 @@ async function chargerProduits() {
                 <td><input type="text" value="${produit.categorie}" disabled></td>
                 <td><input type="text" value="${produit.nom}" id="nom-${produit.id}"></td>
                 <td><input type="text" value="${produit.description}" id="desc-${produit.id}"></td>
-                <td>-</td>
                 <td>
                     ${produit.categorie === "conference"
                     ? "-"
                     : `<input type="text" value="${produit.lien_achat || ''}" id="lien-${produit.id}">`}
                 </td>
-                <td><input type="number" value="${produit.ordre}" id="ordre-${produit.id}" style="width: 60px;"></td>
+                <td><input type="number" value="${produit.ordre || 0}" id="ordre-${produit.id}" style="width: 60px;"></td>
                 <td>
                     <button onclick="modifierProduit(${produit.id})">Modifier</button>
                     <button onclick="supprimerProduit(${produit.id})" style="color:red;">Supprimer</button>
                 </td>
             `;
-
-            document.getElementById("produits-table").appendChild(row);
+            tableBody.appendChild(row);
         });
-        
     } catch (error) {
         console.error("Erreur lors du chargement des produits :", error);
     }
 }
-
-
 
 function toggleFileInput(id) {
     const fileInput = document.getElementById(`image-${id}`);
@@ -142,8 +142,9 @@ document.getElementById("add-product-form").addEventListener("submit", async fun
     formData.append("image", document.getElementById("image").files[0]);
     formData.append("categorie", selectedCategory);
 
-    if (selectedCategory !== "conference") {
-        formData.append("lien_achat", document.getElementById("lien_achat").value);
+    const lienInput = document.getElementById("lien_achat");
+    if (selectedCategory !== "conference" && lienInput) {
+        formData.append("lien_achat", lienInput.value);
     }
 
     try {
@@ -152,8 +153,10 @@ document.getElementById("add-product-form").addEventListener("submit", async fun
             body: formData
         });
 
+        const data = await response.json();
+
         if (!response.ok) {
-            throw new Error("Erreur lors de l'ajout du produit.");
+            throw new Error(data.error || "Erreur lors de l'ajout du produit.");
         }
 
         alert("Produit ajouté !");
@@ -162,20 +165,16 @@ document.getElementById("add-product-form").addEventListener("submit", async fun
         mettreAJourFormulaire();
     } catch (error) {
         console.error("Erreur lors de l'ajout du produit :", error);
+        alert(error.message);
     }
 });
 
 function mettreAJourFormulaire() {
     const selectedCategory = document.getElementById('categorie').value;
-    const priceField = document.getElementById('price-field');
     const linkField = document.getElementById('link-field');
 
-    if (selectedCategory === 'conference') {
-        linkField.style.display = 'none';
-        priceField.style.display = 'none';
-    } else {
-        linkField.style.display = 'block';
-        priceField.style.display = 'none';
+    if (linkField) {
+        linkField.style.display = (selectedCategory === 'conference') ? 'none' : 'block';
     }
 }
 
