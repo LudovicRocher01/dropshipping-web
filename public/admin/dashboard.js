@@ -46,15 +46,11 @@ async function chargerProduits() {
                 <td><input type="text" value="${produit.categorie}" disabled></td>
                 <td><input type="text" value="${produit.nom}" id="nom-${produit.id}"></td>
                 <td><input type="text" value="${produit.description}" id="desc-${produit.id}"></td>
+                <td>-</td>
                 <td>
-                    ${produit.categorie === "spray" 
-                    ? `<input type="number" step="0.01" value="${produit.prix}" id="prix-${produit.id}">`
-                    : "-"}
-                </td>
-                <td>
-                    ${produit.categorie === "spray" || produit.categorie === "conference"
+                    ${produit.categorie === "conference"
                     ? "-"
-                    : `<input type="text" value="${produit.lien_achat}" id="lien-${produit.id}">`}
+                    : `<input type="text" value="${produit.lien_achat || ''}" id="lien-${produit.id}">`}
                 </td>
                 <td><input type="number" value="${produit.ordre}" id="ordre-${produit.id}" style="width: 60px;"></td>
                 <td>
@@ -147,7 +143,6 @@ document.getElementById("add-product-form").addEventListener("submit", async fun
     formData.append("categorie", selectedCategory);
 
     if (selectedCategory !== "conference") {
-        formData.append("prix", document.getElementById("prix").value);
         formData.append("lien_achat", document.getElementById("lien_achat").value);
     }
 
@@ -170,107 +165,12 @@ document.getElementById("add-product-form").addEventListener("submit", async fun
     }
 });
 
-
-async function chargerCommandes() {
-    try {
-        const response = await fetch("/api/commandes");
-        const commandes = await response.json();
-
-        const commandesTable = document.getElementById("commandes-table");
-        commandesTable.innerHTML = "";
-
-        commandes.forEach(commande => {
-            const row = document.createElement("tr");
-
-            let produits;
-            try {
-                produits = JSON.parse(commande.order_details);
-            } catch (parseError) {
-                console.error("Erreur de parsing pour order_details :", parseError);
-                produits = [];
-            }
-            let produitsHTML = "<ul>";
-            produits.forEach(produit => {
-                produitsHTML += `<li>${produit.nom} (x${produit.quantite}) - ${parseFloat(produit.prix).toFixed(2)} €</li>`;
-            });
-            produitsHTML += "</ul>";
-
-            const adresseAffichee = commande.adresse === "Retrait au cabinet" ? "Retrait au cabinet" : commande.adresse;
-
-            const dateObj = new Date(commande.created_at);
-
-            const day = ("0" + dateObj.getDate()).slice(-2);
-            const month = ("0" + (dateObj.getMonth() + 1)).slice(-2);
-            const year = dateObj.getFullYear();
-
-            const hours = ("0" + dateObj.getHours()).slice(-2);
-            const minutes = ("0" + dateObj.getMinutes()).slice(-2);
-            const seconds = ("0" + dateObj.getSeconds()).slice(-2);
-
-            const dateFormatted = `${day}/${month}/${year}`;
-            const timeFormatted = `${hours}h${minutes}m${seconds}s`;
-
-            row.innerHTML = `
-                <td>${commande.transaction_id}</td>
-                <td>${commande.prenom} ${commande.nom}</td>
-                <td>${commande.email}</td>
-                <td>${adresseAffichee}</td>
-                <td> ${dateFormatted} <br>
-                ${timeFormatted} </td>
-                <td>${produitsHTML}</td>
-                <td>${parseFloat(commande.total).toFixed(2)} €</td>
-                <td><button onclick="supprimerCommande(${commande.id})" class="delete-btn">Archiver</button></td>
-            `;
-            commandesTable.appendChild(row);
-        });
-    } catch (error) {
-        console.error("Erreur lors du chargement des commandes :", error);
-    }
-}
-
-async function supprimerCommande(id) {
-    if (!confirm("Êtes-vous sûr de vouloir archiver cette commande ?")) {
-        return;
-    }
-    try {
-        const response = await fetch(`/api/commandes/${id}`, {
-            method: "DELETE"
-        });
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(data.error || "Erreur inconnue");
-        }
-
-        alert(data.message || "Commande archivée !");
-        chargerCommandes();
-    } catch (error) {
-        console.error("Erreur lors de l'archivage :", error);
-        alert("Erreur lors de l'archivage de la commande.");
-    }
-}
-
-async function chargerShippingFee() {
-    try {
-      const response = await fetch('/api/settings/shipping_fee');
-      const data = await response.json();
-      if (data.setting) {
-        document.getElementById("shipping_fee").value = parseFloat(data.setting);
-      }
-    } catch (error) {
-        console.error("Erreur lors du chargement des frais de port :", error);
-    }
-}
-
 function mettreAJourFormulaire() {
     const selectedCategory = document.getElementById('categorie').value;
     const priceField = document.getElementById('price-field');
     const linkField = document.getElementById('link-field');
 
-    if (selectedCategory === 'spray') {
-        linkField.style.display = 'none';
-        priceField.style.display = 'block';
-    } else if (selectedCategory === 'conference') {
+    if (selectedCategory === 'conference') {
         linkField.style.display = 'none';
         priceField.style.display = 'none';
     } else {
@@ -338,19 +238,10 @@ async function supprimerPreinscription(id) {
 
 verifierAuth();
 chargerProduits();
-chargerShippingFee();
 
 document.getElementById("logout").addEventListener("click", function () {
     sessionStorage.removeItem("adminToken");
     window.location.href = "index.html";
-});
-
-document.getElementById("show-orders").addEventListener("click", function () {
-    const section = document.getElementById("commandes-section");
-    section.style.display = section.style.display === "none" ? "block" : "none";
-    if (section.style.display === "block") {
-        chargerCommandes();
-    }
 });
 
 document.getElementById("show-preinscriptions").addEventListener("click", function () {
@@ -362,24 +253,6 @@ document.getElementById("show-preinscriptions").addEventListener("click", functi
     }
 });
 
-
-document.getElementById("update-shipping").addEventListener("click", async () => {
-    const newFee = document.getElementById("shipping_fee").value;
-    try {
-      const response = await fetch('/api/settings/shipping_fee', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ setting_value: newFee })
-      });
-      const data = await response.json();
-      if (data.message) {
-        alert("Frais de port mis à jour avec succès !");
-      }
-    } catch (error) {
-      console.error("Erreur lors de la mise à jour des frais de port :", error);
-      alert("Erreur lors de la mise à jour.");
-    }
-  });
   
   document.addEventListener("DOMContentLoaded", function () {
     mettreAJourFormulaire();

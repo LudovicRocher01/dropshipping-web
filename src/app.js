@@ -44,12 +44,7 @@ const authRoutes = require("./routes/auth").router;
 app.use("/api/auth", authRoutes);
 
 app.use('/api/produits', require('./routes/produits'));
-app.use('/api/order', require('./routes/order'));
-app.use('/api/commande', require('./routes/commande'));
-app.use('/api/commandes', require('./routes/commandes'));
-app.use('/api/settings', require('./routes/settings'));
 app.use('/api/formulaires', require('./routes/formulaires'));
-app.use('/api/paypal', require('./routes/paypal'));
 app.use('/api/pdf', require('./routes/pdf'));
 app.use('/api/chatbot', require('./routes/chatbot'));
 app.use('/api/chatbotFile', require('./routes/chatbotFile'))

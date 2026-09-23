@@ -1,0 +1,1522 @@
+This file is a merged representation of a subset of the codebase, containing files not matching ignore patterns, combined into a single document by Repomix.
+The content has been processed where content has been compressed (code blocks are separated by ⋮---- delimiter).
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of a subset of the repository's contents that is considered the most important context.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching these patterns are excluded: *.css, *.lock, package-lock.json
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Content has been compressed - code blocks are separated by ⋮---- delimiter
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+public/
+  admin/
+    dashboard_style.css
+    dashboard.html
+    dashboard.js
+    index.html
+    index.js
+  chatbot/
+    chat-widget.css
+    chat-widget.js
+  composants/
+    footer.html
+    navbar.html
+    sidebar.html
+  images/
+    book.png
+    coach_kine.jpg
+    conferences.jpg
+    favicon.ico
+    health_product.png
+    lamp.jpg
+    oil_spray.png
+  paiement/
+    paiement.css
+    paiement.html
+    paiement.js
+  pdf-access/
+    pdf-access.html
+    pdf-access.js
+    pdfStyle.css
+  products/
+    books.html
+    conferences.html
+    health_products.html
+    sprays.html
+  recap/
+    recap-commande.html
+    recap-commande.js
+    recapStyles.css
+  index.html
+  script.js
+  sitemap.xml
+  styles.css
+src/
+  controllers/
+    authController.js
+    chatbotController.js
+    chatbotFileController.js
+    chatbotImageController.js
+    commandeController.js
+    commandesController.js
+    formulairesController.js
+    mailController.js
+    orderController.js
+    paypalController.js
+    pdfController.js
+    produitController.js
+    settingsController.js
+  middlewares/
+    authMiddleware.js
+  models/
+    db.js
+  routes/
+    auth.js
+    chatbot.js
+    chatbotFile.js
+    chatbotImage.js
+    commande.js
+    commandes.js
+    formulaires.js
+    mailer.js
+    order.js
+    paypal.js
+    pdf.js
+    produits.js
+    settings.js
+  services/
+    mailer.js
+  app.js
+.gitignore
+package.json
+README.md
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="public/admin/index.js">
+
+</file>
+
+<file path="public/composants/sidebar.html">
+<div id="sidebar-panier" class="sidebar">
+    <div class="sidebar-header">
+        <h2>Votre Panier</h2>
+        <button class="close-btn" onclick="fermerPanier()">&times;</button>
+    </div>
+    <div class="sidebar-content">
+        <div id="panier-container">
+            <p>Votre panier est vide.</p>
+        </div>
+        <div class="amount">
+            <div class="subtotal">
+                <span>Sous-total</span> <span>€ <span id="subtotal">0.00</span></span>
+            </div>
+            <div class="shipping">
+                <span>Livraison</span> <span>€ <span id="shipping">0.00</span></span>
+            </div>
+            <div class="total">
+                <span>Total</span> <span>€ <span id="total">0.00</span></span>
+            </div>
+            <label>
+                <input type="checkbox" id="retraitMagasin"> Retrait au cabinet (gratuit)
+            </label>
+        </div>
+        <button id="validerPanier" class="btn-commander">Commander</button>
+    </div>
+</div>
+</file>
+
+<file path="public/pdf-access/pdf-access.html">
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OSTEOZEN - Accès au pdf La Mascarade Alimentaire</title>
+    <link rel="stylesheet" href="pdfStyle.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://www.paypal.com/sdk/js?client-id=AYf8d2tAP5aRlQfOcLYq3cRrUc1YTKgTFrlkXFxC-bIJeizb1RcjpONNTF8dnAvI8mvd32aLjaxSZKem&currency=EUR"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="../index.html" class="home-link" id="home-icon" title="Retour à l'accueil">
+                <i class="fas fa-home"></i>
+            </a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1>Accès au PDF - La Mascarade Alimentaire</h1>
+        <p>Prix : 10€</p>
+
+        <h3>🔑 Déjà un code d'accès ?</h3>
+        <input type="text" id="accessCode" placeholder="Entrez votre code">
+        <button onclick="verifierCode()">Accéder</button>
+
+        <h3>💳 Payer et recevoir un code</h3>
+        <div id="paypal-button-container"></div>
+    </div>
+
+    <div id="footer-container"></div>
+    <script src="pdf-access.js"></script>
+</body>
+</html>
+</file>
+
+<file path="public/pdf-access/pdf-access.js">
+async function verifierCode()
+</file>
+
+<file path="public/pdf-access/pdfStyle.css">
+body {
+⋮----
+.navbar {
+⋮----
+.nav-container {
+⋮----
+.home-link {
+⋮----
+.home-link i {
+⋮----
+.home-link:hover i {
+⋮----
+.nav-links a {
+⋮----
+.container {
+⋮----
+h1 {
+⋮----
+h3 {
+⋮----
+p {
+⋮----
+input {
+⋮----
+button {
+⋮----
+button:hover {
+⋮----
+#paypal-button-container {
+</file>
+
+<file path="public/sitemap.xml">
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+   <url>
+     <loc>https://osteozen.net/</loc>
+     <priority>1.0</priority>
+   </url>
+   <url>
+     <loc>https://osteozen.net/products/health_products.html</loc>
+   </url>
+   <url>
+     <loc>https://osteozen.net/products/books.html</loc>
+   </url>
+   <url>
+     <loc>https://osteozen.net/products/sprays.html</loc>
+   </url>
+   <url>
+     <loc>https://osteozen.net/products/conferences.html</loc>
+   </url>
+</urlset>
+</file>
+
+<file path="src/controllers/paypalController.js">
+async function getAccessToken()
+⋮----
+exports.createOrder = async (req, res) =>
+</file>
+
+<file path="src/routes/chatbot.js">
+
+</file>
+
+<file path="src/routes/pdf.js">
+
+</file>
+
+<file path="src/services/mailer.js">
+
+</file>
+
+<file path="public/admin/index.html">
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login</title>
+    <link rel="stylesheet" href="dashboard_style.css">
+</head>
+<body>
+
+    <div class="login-container">
+        <h2>Connexion Administrateur</h2>
+        <form id="login-form">
+            <label for="password">Mot de passe :</label>
+            <input type="password" id="password" required>
+            <button type="submit">Se connecter</button>
+        </form>
+        <p id="error-message" style="color:red; display:none;">Mot de passe incorrect.</p>
+    </div>
+
+    <script src="index.js"></script>
+</body>
+</html>
+</file>
+
+<file path="src/controllers/authController.js">
+exports.login = async (req, res) =>
+⋮----
+exports.verifyToken = (req, res) =>
+⋮----
+exports.verifierAdmin = (req, res, next) =>
+</file>
+
+<file path="src/controllers/chatbotFileController.js">
+exports.handleChatWithFile = async (req, res) =>
+</file>
+
+<file path="src/controllers/commandesController.js">
+exports.getCommandes = (req, res) =>
+⋮----
+exports.deleteCommande = (req, res) =>
+</file>
+
+<file path="src/controllers/orderController.js">
+exports.calculerTotalPanier = async (req, res) =>
+⋮----
+async function getShippingFee()
+</file>
+
+<file path="src/controllers/settingsController.js">
+exports.getSetting = (req, res) =>
+⋮----
+exports.updateSetting = (req, res) =>
+</file>
+
+<file path="src/middlewares/authMiddleware.js">
+exports.verifierAdmin = (req, res, next) =>
+</file>
+
+<file path="src/routes/paypal.js">
+
+</file>
+
+<file path=".gitignore">
+node_modules/
+.env
+uploads/
+*.log
+dist/
+tmp/
+server.key
+server.crt
+access.log
+error.log
+</file>
+
+<file path="public/composants/navbar.html">
+<nav class="navbar">
+    <div class="nav-container">
+        <a href="/index.html" class="home-link" id="home-icon" title="Retour à l'accueil">
+            <i class="fas fa-home"></i>
+        </a>
+  
+      <div class="nav-identity">
+        <span id="nom-vincent">Vincent MOREAU</span>
+        <span id="titre-vincent">Ostéopathe</span>
+      </div>
+
+      <div class="page-title" id="page-title"></div>
+  
+      <button class="cart-btn" onclick="ouvrirPanier()">
+        <i class="fas fa-shopping-cart"></i> Panier <span class="cart-count">0</span>
+      </button>
+    </div>
+  </nav>
+</file>
+
+<file path="public/recap/recapStyles.css">
+.navbar {
+⋮----
+.nav-container {
+⋮----
+.logo {
+⋮----
+.nav-links a {
+⋮----
+* {
+⋮----
+body {
+⋮----
+.container {
+⋮----
+.main-content {
+⋮----
+h1, h2, h3 {
+⋮----
+h1 {
+⋮----
+.produits-list {
+⋮----
+.produit-item {
+⋮----
+.produit-item:last-child {
+⋮----
+.produit-img {
+⋮----
+.produit-details p {
+⋮----
+.delivery-info, .total-info, .email-info {
+⋮----
+.delivery-info p, .total-info p, .email-info p {
+</file>
+
+<file path="src/controllers/chatbotController.js">
+exports.sendMessageToChatbot = async (req, res) =>
+</file>
+
+<file path="src/controllers/chatbotImageController.js">
+exports.handleChatWithMultipleFiles = async (req, res) =>
+</file>
+
+<file path="src/controllers/commandeController.js">
+exports.submitCommande = async (req, res) =>
+</file>
+
+<file path="src/controllers/formulairesController.js">
+exports.getFormulaires = (req, res) =>
+⋮----
+exports.getFormulairesByConference = (req, res) =>
+⋮----
+exports.addFormulaire = (req, res) =>
+⋮----
+exports.deleteFormulaire = (req, res) =>
+</file>
+
+<file path="src/controllers/pdfController.js">
+exports.verifierCode = async (req, res) =>
+⋮----
+exports.genererCodeAcces = async (req, res) =>
+</file>
+
+<file path="src/routes/chatbotFile.js">
+filename: (req, file, cb) =>
+</file>
+
+<file path="src/routes/chatbotImage.js">
+filename: (req, file, cb) =>
+</file>
+
+<file path="src/routes/commandes.js">
+
+</file>
+
+<file path="src/routes/formulaires.js">
+
+</file>
+
+<file path="src/controllers/produitController.js">
+exports.getProduits = (req, res) =>
+⋮----
+exports.addProduit = (req, res) =>
+⋮----
+exports.updateProduit = (req, res) =>
+⋮----
+exports.deleteProduit = (req, res) =>
+</file>
+
+<file path="src/models/db.js">
+
+</file>
+
+<file path="src/routes/auth.js">
+
+</file>
+
+<file path="README.md">
+# Read Me
+https://www.osteozen.net/
+
+## Projet Node.js 
+Osteozen est une plateforme de dropshipping permettant de vendre des produits de santé, des livres et des conférences. Le site fonctionne avec Node.js pour le back-end, MySQL pour la base de données, Express.js pour la gestion des routes et PayPal API pour le paiement en ligne.
+
+## Technologies 
+Node.js : Environnement d'exécution JavaScript côté serveur.
+Express.js : Framework minimaliste pour créer les routes et gérer les requêtes.
+MySQL : Base de données relationnelle pour stocker les produits, commandes et utilisateurs.
+Nginx : Serveur proxy utilisé pour rediriger les requêtes HTTP vers l'application Node.js.
+PayPal API : Gestion des paiements en ligne sécurisés.
+Nodemailer : Envoi automatique d'e-mails pour la confirmation de commandes et l'accès aux PDF.
+PM2 : Gestionnaire de processus Node.js pour exécuter et superviser l'application.
+
+## Packages
+dotenv
+Pour ne pas mettre en clair les informations sensibles (mot de passe MySQL, etc.) dans le code, permet de charger ces infos depuis un fichier .env qui ne sera pas partagé publiquement (par exemple sur GitHub).
+</file>
+
+<file path="public/admin/dashboard_style.css">
+body {
+⋮----
+.login-container {
+⋮----
+.admin-container {
+⋮----
+h2, h3 {
+⋮----
+#logout {
+⋮----
+#logout:hover {
+⋮----
+table {
+⋮----
+th, td {
+⋮----
+th {
+⋮----
+td img {
+⋮----
+.actions {
+⋮----
+.actions button {
+⋮----
+.edit-btn {
+⋮----
+.delete-btn {
+⋮----
+.edit-btn:hover {
+⋮----
+.delete-btn:hover {
+⋮----
+form {
+⋮----
+form input, form select, form button {
+⋮----
+form button {
+⋮----
+form button:hover {
+</file>
+
+<file path="public/composants/footer.html">
+<footer class="footer">
+    <div class="footer-container">
+        <div class="footer-contact">
+            <button id="contact-btn" class="contact-button">
+                <i class="fas fa-phone-alt"></i> Contactez-moi
+              </button>
+    </div>
+</footer>
+
+<div id="contact-modal" class="modal">
+    <div class="modal-contact-content">
+        <span class="close-contact">&times;</span>
+        <h3>Coordonnées</h3>
+        <p><i class="fas fa-phone-alt"></i> Téléphone : <a href="tel:+33663277365">+33 6 63 27 73 65</a></p>
+        <p><i class="fas fa-envelope"></i> Email : <a href="mailto:sosteopathe@gmail.com">sosteopathe@gmail.com</a></p>
+    </div>
+</div>
+</file>
+
+<file path="public/recap/recap-commande.js">
+async function getShippingFee()
+</file>
+
+<file path="src/controllers/mailController.js">
+async function getShippingFee()
+⋮----
+exports.envoyerConfirmationCommande = async (client, produits, total, transactionId) =>
+⋮----
+exports.notifierVendeur = async (client, produits, total, transactionId) =>
+⋮----
+exports.envoyerCodeAccesPDF = async (email, accessCode) =>
+⋮----
+exports.notifierPreinscription = async (nom, prenom, email, telephone, conferenceId) =>
+</file>
+
+<file path="src/routes/order.js">
+
+</file>
+
+<file path="src/routes/settings.js">
+
+</file>
+
+<file path="public/chatbot/chat-widget.css">
+#chat-toggle {
+⋮----
+.chat-avatar {
+⋮----
+.chat-notification-bubble {
+⋮----
+#chat-toggle:hover {
+⋮----
+#chat-box {
+⋮----
+#chat-box.open {
+⋮----
+#chat-header {
+⋮----
+.chat-title {
+⋮----
+.chat-title .chat-avatar {
+⋮----
+.header-controls {
+⋮----
+#chat-close {
+⋮----
+#chat-close:hover {
+⋮----
+#chat-clear {
+⋮----
+#chat-clear:hover {
+⋮----
+#chat-messages {
+⋮----
+.chat-message {
+⋮----
+.chat-message.user {
+⋮----
+.chat-message.bot {
+⋮----
+.chat-message strong {
+⋮----
+#file-preview-container {
+⋮----
+#remove-file {
+⋮----
+#chat-form-upload {
+⋮----
+#chat-input-upload {
+⋮----
+#file-btn {
+⋮----
+#file-btn:hover {
+⋮----
+#chat-form-upload button {
+⋮----
+#chat-form-upload button:hover {
+⋮----
+#chat-header { padding: 10px 15px; height: 60px; }
+.chat-title { font-size: 18px; }
+#chat-messages { padding: 15px; padding-bottom: 10px; }
+.chat-message { max-width: 85%; font-size: 15px; padding: 12px 16px; }
+⋮----
+#file-btn { width: 40px; height: 40px; font-size: 18px; flex-shrink: 0; margin: 0; }
+⋮----
+#chat-form-upload button i { font-size: 16px; margin: 0; margin-right: 2px; }
+⋮----
+#chat-footer { right: 50px; top: 18px; }
+#chat-clear { padding: 6px 10px; font-size: 0; }
+#chat-clear i { font-size: 16px; margin: 0; }
+</file>
+
+<file path="public/paiement/paiement.css">
+body {
+⋮----
+.navbar {
+⋮----
+.nav-container {
+⋮----
+.home-link {
+⋮----
+.home-link:hover {
+⋮----
+.container {
+⋮----
+.page-heading {
+⋮----
+.checkout-grid {
+⋮----
+.cart-section, .payment-section {
+⋮----
+.section-title {
+⋮----
+.product-list {
+⋮----
+.product-card {
+⋮----
+.card-left {
+⋮----
+.product-img {
+⋮----
+.product-name {
+⋮----
+.product-qty {
+⋮----
+.product-price {
+⋮----
+.totals {
+⋮----
+.line {
+⋮----
+.total-line {
+⋮----
+.total-price {
+⋮----
+.payment-wrapper {
+⋮----
+.security-badge {
+⋮----
+#loading-overlay {
+⋮----
+.loading-spinner {
+⋮----
+.cart-section {
+⋮----
+.payment-section {
+</file>
+
+<file path="public/paiement/paiement.html">
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OSTEOZEN - Paiement Sécurisé</title>
+    <link rel="stylesheet" href="paiement.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <script src="https://www.paypal.com/sdk/js?client-id=AYf8d2tAP5aRlQfOcLYq3cRrUc1YTKgTFrlkXFxC-bIJeizb1RcjpONNTF8dnAvI8mvd32aLjaxSZKem&currency=EUR"></script>
+</head>
+<body>
+
+    <div id="loading-overlay">
+        <div class="loading-spinner"></div>
+        <p>Traitement de votre commande...</p>
+    </div>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="../index.html" class="home-link" title="Retour à l'accueil">
+                <i class="fas fa-arrow-left"></i> Retour boutique
+            </a>
+        </div>
+    </nav>
+
+    <main class="container">
+        <h1 class="page-heading">Paiement sécurisé</h1>
+
+        <div class="checkout-grid">
+            <section class="cart-section">
+                <h2 class="section-title">Résumé de la commande</h2>
+                
+                <div id="paiement-container" class="product-list">
+                    <p>Chargement du panier...</p>
+                </div>
+
+                <div class="totals">
+                    <div class="line">
+                        <span>Sous-total : </span>
+                        <span id="subtotal">0.00</span> €
+                    </div>
+                    <div class="line">
+                        <span>Livraison : </span>
+                        <span id="shipping">0.00</span> €
+                    </div>
+                    <div class="line total-line">
+                        <span>Total à payer : </span>
+                        <span class="total-price"><span id="total">0.00</span> €</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="payment-section">
+                <h2 class="section-title">Choisir le moyen de paiement</h2>
+                <div class="payment-wrapper">
+                    <div id="paypal-button-container"></div>
+                </div>
+                <div class="security-badge">
+                    <i class="fas fa-lock"></i> Paiement 100% Sécurisé via PayPal (Compte ou CB)
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script src="paiement.js"></script>
+</body>
+</html>
+</file>
+
+<file path="public/products/conferences.html">
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OSTEOZEN - Conférences et Formations</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../chatbot/chat-widget.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div id="navbar-container"></div>
+
+    <section class="conferences-section">
+        <div class="conferences-container" id="conferences-container">
+        </div>
+    </section>
+    
+    <div id="preinscription-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn-preinscription" onclick="fermerModal()">&times;</span>
+            <h2>Pré-inscription</h2>
+            <form id="preinscription-form">
+                <input type="hidden" id="conference_id">
+                <label for="nom">Nom :</label>
+                <input type="text" id="nom" name="nom" required>
+            
+                <label for="prenom">Prénom :</label>
+                <input type="text" id="prenom" name="prenom" required>
+            
+                <label for="email">Email :</label>
+                <input type="email" id="email" name="email" required>
+            
+                <label for="telephone">Téléphone :</label>
+                <input type="tel" id="telephone" name="telephone" required>
+            
+                <button type="submit" class="btn-submit">Envoyer</button>
+            </form>
+            
+        </div>
+    </div>
+    
+
+    <div id="footer-container"></div>
+    <div id="toast" class="toast hidden"></div>
+    <div id="confirmation-modal" class="modal-inscription">
+        <div class="modal-inscription-content">
+            <p id="confirmation-message"></p>
+            <button id="close-confirmation">OK</button>
+        </div>
+    </div>
+    
+
+    <script src="../chatbot/chat-widget.js" defer></script>
+    <script src="../script.js"></script>    
+</body>
+</html>
+</file>
+
+<file path="public/recap/recap-commande.html">
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OSTEOZEN - Récapitulatif de Commande</title>
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="recapStyles.css">
+</head>
+
+<body>
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="../index.html" class="logo">🌿 Osteozen</a>
+    </div>
+  </nav>
+  
+  <main class="container main-content">
+    <h1 id="remerciement">Merci pour votre commande !</h1>
+    <div id="recap"></div>
+  </main>
+
+  <script src="recap-commande.js"></script>
+
+</body>
+</html>
+</file>
+
+<file path="src/routes/commande.js">
+
+</file>
+
+<file path="public/paiement/paiement.js">
+function getPanierValide()
+⋮----
+async function afficherPanier()
+⋮----
+async function getShippingFee()
+⋮----
+async function lancerPaiement()
+</file>
+
+<file path="src/routes/mailer.js">
+
+</file>
+
+<file path="src/routes/produits.js">
+filename: (req, file, cb) =>
+⋮----
+const fileFilter = (req, file, cb) =>
+</file>
+
+<file path="public/products/books.html">
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OSTEOZEN - Livres</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../chatbot/chat-widget.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div id="navbar-container"></div>
+
+    <section class="produits-section">
+        <div class="produits-container" id="produits-container"></div>
+    </section>
+
+    <div id="footer-container"></div>
+
+    <script src="../chatbot/chat-widget.js" defer></script>
+    <script src="../script.js"></script>
+</body>
+</html>
+</file>
+
+<file path="package.json">
+{
+  "name": "dropshipping-web",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "axios": "^1.7.9",
+    "bcrypt": "^5.1.1",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0",
+    "express-session": "^1.18.1",
+    "fs": "^0.0.1-security",
+    "jsonwebtoken": "^9.0.2",
+    "lts": "^2.0.0",
+    "multer": "^1.4.5-lts.1",
+    "mysql": "^2.18.1",
+    "nodemailer": "^6.10.0",
+    "openai": "^4.89.1",
+    "serve-favicon": "^2.5.0",
+    "validator": "^13.12.0"
+  }
+}
+</file>
+
+<file path="public/products/health_products.html">
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OSTEOZEN - Produits de santé</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../chatbot/chat-widget.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div id="navbar-container"></div>
+        
+    </nav>
+    <p class="disclaimer">
+        Simples recommandations, je ne touche aucun pourcentage sur la vente de ces articles.
+    </p>
+    
+
+    <section class="produits-section">
+        <div class="produits-container" id="produits-container"></div>
+    </section>
+
+    <div id="footer-container"></div>
+
+    <script src="../chatbot/chat-widget.js" defer></script>
+    <script src="../script.js"></script>
+</body>
+</html>
+</file>
+
+<file path="public/products/sprays.html">
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OSTEOZEN - Sprays</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../chatbot/chat-widget.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"> 
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div id="navbar-container"></div>
+    
+    <section class="produits-section">
+        <div class="produits-container" id="produits-container"></div>
+    </section>
+    
+    <div id="footer-container"></div>
+    <div id="toast" class="toast hidden"></div>
+
+    <script src="../chatbot/chat-widget.js" defer></script>
+    <script src="../script.js"></script>
+</body>
+</html>
+</file>
+
+<file path="public/admin/dashboard.html">
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="dashboard_style.css">
+</head>
+<body>
+    <div class="admin-container">
+        <h2>Panneau d'administration</h2>
+        <button id="logout">Déconnexion</button>
+        <div class="settings-section">
+            <h3>Paramètres</h3>
+            <label for="shipping_fee">Frais de port (€):</label>
+            <input type="number" id="shipping_fee" min="0" step="0.01">
+            <button id="update-shipping">Mettre à jour</button>
+          </div>
+          
+        <h3>Liste des Produits</h3>
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Image</th>
+            <th>Catégorie</th>
+            <th>Nom</th>
+            <th>Description</th>
+            <th>Prix</th>
+            <th>Lien d'achat</th>
+            <th>Ordre</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody id="produits-table"></tbody>
+</table>
+
+
+        <h3>Ajouter un Produit</h3>
+        <form id="add-product-form" enctype="multipart/form-data">
+            <select id="categorie" required>
+                <option value="sante">Santé</option>
+                <option value="livre">Livre</option>
+                <option value="spray">Spray</option>
+                <option value="conference">Conférence</option>
+            </select>
+            <input type="text" id="nom" placeholder="Nom du produit" required>
+            <input type="text" id="description" placeholder="Description" required>
+            <input type="file" id="image" accept="image/*" required>
+        
+            <div id="price-field" tyle="display: none;">
+                <input type="number" id="prix" placeholder="Prix" step="0.01">
+            </div>
+            <div id="link-field">
+                <input type="text" id="lien_achat" placeholder="Lien d'achat">
+            </div>
+        
+            <button type="submit">Ajouter Produit</button>
+        </form>
+        
+        
+        
+        
+        <button id="show-orders">Voir les Commandes</button>
+
+<div id="commandes-section" style="display: none;">
+    <h3>Liste des Commandes</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Client</th>
+                <th>Email</th>
+                <th>Adresse</th>
+                <th>Date de la commande</th></Date>
+                <th>Détails de la commande</th>
+                <th>Total (€)</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="commandes-table"></tbody>
+    </table>
+</div>
+
+<button id="show-preinscriptions">Voir les pré-inscriptions</button>
+
+<div id="preinscriptions-section" style="display: none;">
+    <h3>Liste des Pré-inscriptions</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Prénom</th>
+                <th>Email</th>
+                <th>Téléphone</th>
+                <th>Conférence</th>
+                <th>Date d'inscription</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="preinscriptions-table"></tbody>
+    </table>
+</div>
+
+    <script src="dashboard.js"></script>
+</body>
+</html>
+</file>
+
+<file path="public/chatbot/chat-widget.js">
+filePreview.style.display = "none"; // Cacher la preview après envoi
+⋮----
+function appendMessage(sender, text, save = true)
+⋮----
+function loadChatHistory()
+</file>
+
+<file path="public/admin/dashboard.js">
+async function verifierAuth()
+⋮----
+async function chargerProduits()
+⋮----
+function toggleFileInput(id)
+⋮----
+async function modifierProduit(id)
+⋮----
+async function supprimerProduit(id)
+⋮----
+async function chargerCommandes()
+⋮----
+async function supprimerCommande(id)
+⋮----
+async function chargerShippingFee()
+⋮----
+function mettreAJourFormulaire()
+⋮----
+async function chargerPreinscriptions(conferenceId = "")
+⋮----
+async function supprimerPreinscription(id)
+</file>
+
+<file path="public/index.html">
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-site-verification" content="kmponH92E6PTb3ZQquBQ3OXpi1gOjkIPe3RdTntdx8Q" />
+    <meta name="description" content="Vincent Moreau, ostéopathe à Colomars (Nice). Découvrez ses soins, produits naturels, livres et formations bien-être sur osteozen.net.">
+    <title>OSTEOZEN - Cabinet d'ostéopathie à Colomars (Nice)</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="chatbot/chat-widget.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div id="navbar-container"></div>
+    <main>
+        <div class="tile-container">
+            <a href="products/health_products.html" class="tile health">
+                <img src="images/health_product.png" alt="Produits de santé">
+                <span class="tile-text">Produits de Santé</span>
+            </a>
+            <a href="products/books.html" class="tile books">
+                <img src="images/book.png" alt="Livres">
+                <span class="tile-text">Mes Livres</span>
+            </a>
+            <a href="products/sprays.html" class="tile sprays">
+                <img src="images/oil_spray.png" alt="Sprays d'huiles essentielles">
+                <span class="tile-text">Sprays d'ambiance et huiles de soin</span>
+            </a>
+            <a href="#" class="tile sprays" id="dream-machine-tile">
+                <img src="images/lamp.jpg" alt="La Dream Machine">
+                <span class="tile-text">Dream Machine</span>
+            </a>
+            <a href="products/conferences.html" class="tile conferences">
+                <img src="images/conferences.jpg" alt="Conferences">
+                <span class="tile-text">Conférences et formations</span>
+            </a>
+        </div>
+    </main>
+
+    <div id="footer-container"></div>
+    <div id="toast" class="toast hidden"></div>
+
+    <div id="lightbox-modal" class="lightbox">
+        <span class="close-lightbox">&times;</span>
+        <img class="lightbox-content" id="lightbox-img">
+    </div>
+    
+    <script src="/script.js"></script>
+    <script src="chatbot/chat-widget.js" defer></script>
+</body>
+</html>
+</file>
+
+<file path="src/app.js">
+
+</file>
+
+<file path="public/script.js">
+function getCurrentPage()
+⋮----
+function getActionButton(produit)
+⋮----
+async function afficherProduits(categorie)
+⋮----
+function showToast(message, duration = 3000)
+⋮----
+function ouvrirPanier()
+⋮----
+function fermerPanier()
+⋮----
+function getPanier()
+⋮----
+function ajouterAuPanier(id, nom, prix, image)
+⋮----
+function mettreAJourBadgePanier()
+⋮----
+async function afficherPanier()
+⋮----
+function modifierQuantite(id, changement)
+⋮----
+function supprimerProduit(id)
+⋮----
+async function getShippingFee()
+function validerPanier()
+⋮----
+async function chargerConferences()
+⋮----
+function initialiserPreinscription()
+⋮----
+function ouvrirModal(conferenceId)
+⋮----
+function fermerModal(event)
+⋮----
+function getAudioPlayer(produit)
+⋮----
+// Au clic sur la tuile
+⋮----
+e.preventDefault(); // Empêche le lien # de s'activer
+⋮----
+// Récupère l'image à l'intérieur de la tuile
+⋮----
+// Au clic sur la croix de fermeture
+⋮----
+// Au clic en dehors de l'image (sur le fond noir)
+⋮----
+function attacherEvenementsFooter()
+</file>
+
+<file path="public/styles.css">
+body {
+⋮----
+.navbar {
+⋮----
+.nav-identity {
+⋮----
+#nom-vincent {
+⋮----
+#titre-vincent {
+⋮----
+.nav-container {
+⋮----
+.page-dynamic-title {
+⋮----
+.home-link {
+⋮----
+.home-link i {
+⋮----
+.home-link:hover i {
+⋮----
+.page-title {
+⋮----
+.page-title i {
+⋮----
+.logo {
+⋮----
+.nav-links a {
+⋮----
+.cart-btn {
+⋮----
+.cart-btn:hover {
+⋮----
+.tile-container {
+⋮----
+.tile {
+⋮----
+.tile img {
+⋮----
+.tile::after {
+⋮----
+.tile:hover {
+⋮----
+.tile:hover img {
+⋮----
+.tile-text {
+⋮----
+.lightbox {
+⋮----
+.lightbox-content {
+⋮----
+.close-lightbox {
+⋮----
+.close-lightbox:hover,
+⋮----
+.disclaimer {
+⋮----
+.produits-section {
+⋮----
+.produits-container {
+⋮----
+.panier-item {
+⋮----
+.panier-item img {
+⋮----
+.total {
+⋮----
+.wrapper{
+⋮----
+&:hover{
+⋮----
+.container{
+⋮----
+.top{
+.bottom{
+⋮----
+h1{
+p{
+.left{
+⋮----
+.details{
+.buy{
+⋮----
+i{
+⋮----
+&:hover i{
+⋮----
+.inside{
+⋮----
+.icon{
+⋮----
+.contents{
+⋮----
+.contents {
+⋮----
+.inside .contents::-webkit-scrollbar {
+⋮----
+.inside .contents::-webkit-scrollbar-thumb {
+⋮----
+.inside .contents::-webkit-scrollbar-thumb:hover {
+⋮----
+.footer {
+⋮----
+.footer-container {
+⋮----
+.footer-contact h3 {
+⋮----
+.footer-contact p {
+⋮----
+.footer a {
+⋮----
+.footer a:hover {
+⋮----
+.footer i {
+⋮----
+.toast {
+⋮----
+.toast.visible {
+⋮----
+.toast.hidden {
+.sidebar {
+⋮----
+.modal-inscription {
+⋮----
+.modal-inscription-content {
+⋮----
+#close-confirmation {
+⋮----
+#close-confirmation:hover {
+⋮----
+.sidebar.open {
+⋮----
+.sidebar-header {
+⋮----
+.sidebar-overlay {
+⋮----
+.sidebar-overlay.active {
+⋮----
+.close-btn {
+⋮----
+.close-btn:hover {
+⋮----
+.close-btn-preinscription {
+⋮----
+.close-btn-preinscription:hover {
+⋮----
+.sidebar-content {
+⋮----
+.product-card {
+⋮----
+.product-card:hover {
+⋮----
+.product-card img {
+⋮----
+.product-info {
+⋮----
+.product-name {
+⋮----
+.product-price {
+⋮----
+.product-qty {
+⋮----
+.product-qty button {
+⋮----
+.product-qty button:hover {
+⋮----
+.product-qty span {
+⋮----
+.delete-btn {
+⋮----
+.amount {
+⋮----
+.amount div {
+⋮----
+label {
+⋮----
+input[type="checkbox"] {
+⋮----
+.btn-commander {
+⋮----
+.btn-commander:hover {
+⋮----
+.conferences-section {
+⋮----
+.conferences-container {
+⋮----
+.conference-card {
+⋮----
+.conference-card:hover {
+⋮----
+.conference-card img {
+⋮----
+.conference-card .content {
+⋮----
+.conference-card h3 {
+⋮----
+.conference-card p {
+⋮----
+.conference-card .btn-preinscription {
+⋮----
+.conference-card .btn-preinscription:hover {
+⋮----
+.modal {
+⋮----
+.modal-content {
+⋮----
+.modal-content h2 {
+⋮----
+.modal form label {
+⋮----
+.modal form {
+⋮----
+.modal form input {
+⋮----
+.modal form input:focus {
+⋮----
+.modal form .btn-submit {
+⋮----
+.modal form .btn-submit:hover {
+⋮----
+.audio-player {
+⋮----
+.audio-player audio {
+⋮----
+.contact-button {
+⋮----
+.contact-button:hover {
+⋮----
+#contact-modal {
+⋮----
+.modal-contact-content {
+⋮----
+.modal-contact-content h3 {
+⋮----
+.modal-contact-content p {
+⋮----
+.modal-contact-content a {
+⋮----
+.modal-contact-content a:hover {
+⋮----
+.close-contact {
+⋮----
+.close-contact:hover {
+</file>
+
+</files>

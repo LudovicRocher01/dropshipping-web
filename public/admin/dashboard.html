@@ -10,13 +10,6 @@
     <div class="admin-container">
         <h2>Panneau d'administration</h2>
         <button id="logout">Déconnexion</button>
-        <div class="settings-section">
-            <h3>Paramètres</h3>
-            <label for="shipping_fee">Frais de port (€):</label>
-            <input type="number" id="shipping_fee" min="0" step="0.01">
-            <button id="update-shipping">Mettre à jour</button>
-          </div>
-          
         <h3>Liste des Produits</h3>
 <table>
     <thead>
@@ -26,7 +19,6 @@
             <th>Catégorie</th>
             <th>Nom</th>
             <th>Description</th>
-            <th>Prix</th>
             <th>Lien d'achat</th>
             <th>Ordre</th>
             <th>Actions</th>
@@ -41,47 +33,17 @@
             <select id="categorie" required>
                 <option value="sante">Santé</option>
                 <option value="livre">Livre</option>
-                <option value="spray">Spray</option>
                 <option value="conference">Conférence</option>
             </select>
             <input type="text" id="nom" placeholder="Nom du produit" required>
             <input type="text" id="description" placeholder="Description" required>
             <input type="file" id="image" accept="image/*" required>
-        
-            <div id="price-field" tyle="display: none;">
-                <input type="number" id="prix" placeholder="Prix" step="0.01">
-            </div>
             <div id="link-field">
                 <input type="text" id="lien_achat" placeholder="Lien d'achat">
             </div>
         
             <button type="submit">Ajouter Produit</button>
         </form>
-        
-        
-        
-        
-        <button id="show-orders">Voir les Commandes</button>
-
-<div id="commandes-section" style="display: none;">
-    <h3>Liste des Commandes</h3>
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Client</th>
-                <th>Email</th>
-                <th>Adresse</th>
-                <th>Date de la commande</th></Date>
-                <th>Détails de la commande</th>
-                <th>Total (€)</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody id="commandes-table"></tbody>
-    </table>
-</div>
-
 <button id="show-preinscriptions">Voir les pré-inscriptions</button>
 
 <div id="preinscriptions-section" style="display: none;">

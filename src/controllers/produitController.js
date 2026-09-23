@@ -2,8 +2,7 @@ const db = require('../models/db');
 const validator = require("validator");
 
 exports.getProduits = (req, res) => {
-    db.query('SELECT * FROM produits ORDER BY FIELD(categorie, "spray", "livre", "sante", "conference"), ordre ASC, id ASC', (err, results) => {
-        if (err) {
+    db.query('SELECT * FROM produits ORDER BY FIELD(categorie, "livre", "sante", "conference"), ordre ASC, id ASC', (err, results) => {        if (err) {
             console.error('Erreur lors de la récupération des produits:', err);
             return res.status(500).json({ error: 'Erreur serveur' });
         }
