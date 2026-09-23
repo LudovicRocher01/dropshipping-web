@@ -135,6 +135,7 @@ async function supprimerProduit(id) {
 document.getElementById("add-product-form").addEventListener("submit", async function (event) {
     event.preventDefault();
 
+    const token = sessionStorage.getItem("adminToken");
     const selectedCategory = document.getElementById("categorie").value;
     const formData = new FormData();
     formData.append("nom", document.getElementById("nom").value);
@@ -150,6 +151,9 @@ document.getElementById("add-product-form").addEventListener("submit", async fun
     try {
         const response = await fetch("/api/produits", {
             method: "POST",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            },
             body: formData
         });
 
@@ -179,29 +183,39 @@ function mettreAJourFormulaire() {
 }
 
 async function chargerPreinscriptions(conferenceId = "") {
+    const token = sessionStorage.getItem("adminToken");
     try {
-        const response = await fetch("/api/formulaires");
-        let preinscriptions = await response.json();
+        const response = await fetch("/api/formulaires", {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
+        const preinscriptions = await response.json();
 
+        if (!Array.isArray(preinscriptions)) {
+            console.warn("Réponse inattendue formulaires :", preinscriptions);
+            return;
+        }
+
+        let liste = preinscriptions;
         if (conferenceId) {
-            preinscriptions = preinscriptions.filter(p => p.conference_id == conferenceId);
+            liste = liste.filter(p => p.conference_id == conferenceId);
         }
 
         const tableBody = document.getElementById("preinscriptions-table");
         tableBody.innerHTML = "";
 
-        preinscriptions.forEach(preinscrit => {
+        liste.forEach(preinscrit => {
             const row = document.createElement("tr");
-
             row.innerHTML = `
                 <td>${preinscrit.nom}</td>
                 <td>${preinscrit.prenom}</td>
                 <td>${preinscrit.email}</td>
                 <td>${preinscrit.telephone}</td>
-                <td>${preinscrit.conference_nom}</td>
+                <td>${preinscrit.conference_nom || "-"}</td>
                 <td>${new Date(preinscrit.date_inscription).toLocaleString()}</td>
-            <td><button onclick="supprimerPreinscription(${preinscrit.id})" style="color:red;">🗑️ Supprimer</button></td>            `;
-
+                <td><button onclick="supprimerPreinscription(${preinscrit.id})" style="color:red;">🗑️ Supprimer</button></td>
+            `;
             tableBody.appendChild(row);
         });
     } catch (error) {
