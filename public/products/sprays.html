@@ -3,26 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sprays d'ambiance - Vincent Moreau</title>
+    <title>OSTEOZEN - Sprays d'ambiance</title>
     <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../chatbot/chat-widget.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
+
 <body>
     <div id="navbar-container"></div>
 
-    <main class="page-container">
-        <div class="cabinet-notice">
-            <p><strong>Produits disponibles à la vente directement au cabinet</strong></p>
+    <section class="produits-section">
+        <div class="cabinet-notice" style="background: rgba(46, 125, 50, 0.15); border-left: 4px solid #4CAF50; padding: 12px 20px; margin: 20px auto 30px auto; max-width: 700px; border-radius: 8px; text-align: center; color: #e8f5e9; font-weight: 500;">
+            🌿 Produits disponibles à la vente directement au cabinet
         </div>
-
-        <section class="products-grid" id="sprays-grid">
-        </section>
-    </main>
+        <div class="produits-container" id="produits-container"></div>
+    </section>
 
     <div id="footer-container"></div>
 
-    <script src="sprays.js"></script>
+    <script src="../chatbot/chat-widget.js" defer></script>
     <script>
-        fetch('composants/navbar.html')
+        // Chargement navbar & footer
+        fetch('../composants/navbar.html')
             .then(res => res.text())
             .then(data => {
                 document.getElementById('navbar-container').innerHTML = data;
@@ -30,9 +34,46 @@
                 if (title) title.textContent = "Sprays d'ambiance";
             });
 
-        fetch('composants/footer.html')
+        fetch('../composants/footer.html')
             .then(res => res.text())
             .then(data => document.getElementById('footer-container').innerHTML = data);
+
+        // Chargement dynamique des sprays avec la structure exacte du site
+        document.addEventListener("DOMContentLoaded", async () => {
+            const container = document.getElementById("produits-container");
+            try {
+                const response = await fetch("/api/produits");
+                const produits = await response.json();
+                const sprays = produits.filter(p => p.categorie === "spray");
+
+                if (sprays.length === 0) {
+                    container.innerHTML = "<p style='color: white; text-align: center; width: 100%;'>Aucun spray disponible pour le moment.</p>";
+                    return;
+                }
+
+                container.innerHTML = "";
+                sprays.forEach(p => {
+                    const card = document.createElement("div");
+                    card.className = "produit-card";
+
+                    const prixHtml = p.prix ? `<p class="produit-prix" style="font-size: 1.2rem; font-weight: bold; color: #4CAF50; margin-top: 10px;">${parseFloat(p.prix).toFixed(2)} €</p>` : "";
+
+                    card.innerHTML = `
+                        <div class="produit-image-container">
+                            <img src="${p.image_url}" alt="${p.nom}" class="produit-image">
+                        </div>
+                        <div class="produit-details">
+                            <h3 class="produit-nom">${p.nom}</h3>
+                            <p class="produit-description">${p.description}</p>
+                            ${prixHtml}
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            } catch (err) {
+                console.error("Erreur chargement sprays :", err);
+            }
+        });
     </script>
 </body>
 </html>
