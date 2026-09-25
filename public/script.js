@@ -3,6 +3,7 @@ function getCurrentPage() {
     if (path.includes("health_products.html")) return "sante";
     if (path.includes("books.html")) return "livre";
     if (path.includes("conferences.html")) return "conference";
+    if (path.includes("sprays.html")) return "spray";
     return "accueil";
 }
 
@@ -11,6 +12,8 @@ function getActionButton(produit) {
         return `<a href="${produit.lien_achat}" target="_blank">
                     <i class="material-icons">add_shopping_cart</i>
                 </a>`;
+    } else if (produit.categorie === "spray" && produit.prix) {
+        return `<span style="font-size: 1.1rem; font-weight: bold; color: #4CAF50;">${parseFloat(produit.prix).toFixed(2)} €</span>`;
     } else {
         return "";
     }
@@ -202,7 +205,7 @@ function getAudioPlayer(produit) {
 document.addEventListener("DOMContentLoaded", () => {
     const page = getCurrentPage();
 
-    if (page === "sante" || page === "livre") {
+    if (page === "sante" || page === "livre" || page === "spray") {
         afficherProduits(page);
     } 
     else if (page === "conference") {
@@ -270,6 +273,8 @@ fetch("/composants/navbar.html")
         pageTitle.innerHTML = '<i class="fas fa-heartbeat"></i> Les produits de santé';
       } else if (window.location.pathname.includes("conferences.html")) {
         pageTitle.innerHTML = '<i class="fas fa-graduation-cap"></i> Conférences et formations';
+      } else if (window.location.pathname.includes("sprays.html")) {
+        pageTitle.innerHTML = '<i class="fas fa-air-freshener"></i> Sprays d\'ambiance';
       }
     }
   });

@@ -14,66 +14,17 @@
 <body>
     <div id="navbar-container"></div>
 
+    <div style="background: rgba(46, 125, 50, 0.15); border: 1px solid rgba(76, 175, 80, 0.3); border-radius: 8px; padding: 12px 20px; max-width: 600px; margin: 20px auto 0 auto; text-align: center; color: #a5d6a7; font-weight: 500;">
+        🌿 Produits disponibles à la vente directement au cabinet
+    </div>
+
     <section class="produits-section">
-        <div class="cabinet-notice" style="background: rgba(46, 125, 50, 0.15); border-left: 4px solid #4CAF50; padding: 12px 20px; margin: 20px auto 30px auto; max-width: 700px; border-radius: 8px; text-align: center; color: #e8f5e9; font-weight: 500;">
-            🌿 Produits disponibles à la vente directement au cabinet
-        </div>
         <div class="produits-container" id="produits-container"></div>
     </section>
 
     <div id="footer-container"></div>
 
     <script src="../chatbot/chat-widget.js" defer></script>
-    <script>
-        // Chargement navbar & footer
-        fetch('../composants/navbar.html')
-            .then(res => res.text())
-            .then(data => {
-                document.getElementById('navbar-container').innerHTML = data;
-                const title = document.getElementById('page-title');
-                if (title) title.textContent = "Sprays d'ambiance";
-            });
-
-        fetch('../composants/footer.html')
-            .then(res => res.text())
-            .then(data => document.getElementById('footer-container').innerHTML = data);
-
-        // Chargement dynamique des sprays avec la structure exacte du site
-        document.addEventListener("DOMContentLoaded", async () => {
-            const container = document.getElementById("produits-container");
-            try {
-                const response = await fetch("/api/produits");
-                const produits = await response.json();
-                const sprays = produits.filter(p => p.categorie === "spray");
-
-                if (sprays.length === 0) {
-                    container.innerHTML = "<p style='color: white; text-align: center; width: 100%;'>Aucun spray disponible pour le moment.</p>";
-                    return;
-                }
-
-                container.innerHTML = "";
-                sprays.forEach(p => {
-                    const card = document.createElement("div");
-                    card.className = "produit-card";
-
-                    const prixHtml = p.prix ? `<p class="produit-prix" style="font-size: 1.2rem; font-weight: bold; color: #4CAF50; margin-top: 10px;">${parseFloat(p.prix).toFixed(2)} €</p>` : "";
-
-                    card.innerHTML = `
-                        <div class="produit-image-container">
-                            <img src="${p.image_url}" alt="${p.nom}" class="produit-image">
-                        </div>
-                        <div class="produit-details">
-                            <h3 class="produit-nom">${p.nom}</h3>
-                            <p class="produit-description">${p.description}</p>
-                            ${prixHtml}
-                        </div>
-                    `;
-                    container.appendChild(card);
-                });
-            } catch (err) {
-                console.error("Erreur chargement sprays :", err);
-            }
-        });
-    </script>
+    <script src="../script.js"></script>
 </body>
 </html>
