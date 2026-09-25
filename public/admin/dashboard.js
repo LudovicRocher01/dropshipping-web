@@ -144,8 +144,13 @@ document.getElementById("add-product-form").addEventListener("submit", async fun
     formData.append("categorie", selectedCategory);
 
     const lienInput = document.getElementById("lien_achat");
-    if (selectedCategory !== "conference" && lienInput) {
+    if (selectedCategory !== "conference" && selectedCategory !== "spray" && lienInput) {
         formData.append("lien_achat", lienInput.value);
+    }
+
+    const prixInput = document.getElementById("prix");
+    if (selectedCategory === "spray" && prixInput) {
+        formData.append("prix", prixInput.value);
     }
 
     try {
@@ -176,9 +181,13 @@ document.getElementById("add-product-form").addEventListener("submit", async fun
 function mettreAJourFormulaire() {
     const selectedCategory = document.getElementById('categorie').value;
     const linkField = document.getElementById('link-field');
+    const priceField = document.getElementById('price-field');
 
     if (linkField) {
-        linkField.style.display = (selectedCategory === 'conference') ? 'none' : 'block';
+        linkField.style.display = (selectedCategory === 'conference' || selectedCategory === 'spray') ? 'none' : 'block';
+    }
+    if (priceField) {
+        priceField.style.display = (selectedCategory === 'spray') ? 'block' : 'none';
     }
 }
 

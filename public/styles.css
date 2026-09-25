@@ -236,6 +236,26 @@ body {
   animation: zoomIn 0.3s;
 }
 
+.cabinet-notice {
+    background-color: #f0f7f4;
+    border-left: 4px solid #2e7d32;
+    padding: 12px 20px;
+    margin: 20px auto;
+    max-width: 800px;
+    border-radius: 4px;
+    text-align: center;
+    color: #1b5e20;
+    font-size: 1.05rem;
+}
+
+.product-price {
+    display: inline-block;
+    font-weight: bold;
+    color: #2e7d32;
+    font-size: 1.15rem;
+    margin-top: 8px;
+}
+
 @keyframes zoomIn {
   from {transform:scale(0)}
   to {transform:scale(1)}

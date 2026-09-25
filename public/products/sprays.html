@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sprays d'ambiance - Vincent Moreau</title>
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+    <div id="navbar-container"></div>
+
+    <main class="page-container">
+        <div class="cabinet-notice">
+            <p><strong>Produits disponibles à la vente directement au cabinet</strong></p>
+        </div>
+
+        <section class="products-grid" id="sprays-grid">
+        </section>
+    </main>
+
+    <div id="footer-container"></div>
+
+    <script src="sprays.js"></script>
+    <script>
+        fetch('composants/navbar.html')
+            .then(res => res.text())
+            .then(data => {
+                document.getElementById('navbar-container').innerHTML = data;
+                const title = document.getElementById('page-title');
+                if (title) title.textContent = "Sprays d'ambiance";
+            });
+
+        fetch('composants/footer.html')
+            .then(res => res.text())
+            .then(data => document.getElementById('footer-container').innerHTML = data);
+    </script>
+</body>
+</html>

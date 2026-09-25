@@ -16,7 +16,7 @@ exports.addProduit = (req, res) => {
     const image_url = req.file ? `/uploads/${req.file.filename}` : null;
 
     if (!nom || !categorie || !image_url) {
-        return res.status(400).json({ error: "Nom, image et catégorie obligatoires" });
+        return res.status(400).json({ error: "Nom, image et catégorie obligatoires." });
     }
 
     if (!validator.isLength(nom, { min: 2, max: 100 })) {
@@ -32,17 +32,20 @@ exports.addProduit = (req, res) => {
     if (categorie === "conference") {
         sql = 'INSERT INTO produits (nom, description, image_url, categorie) VALUES (?, ?, ?, ?)';
         params = [nom, description, image_url, categorie];
+    } else if (categorie === "spray") {
+        sql = 'INSERT INTO produits (nom, description, prix, image_url, categorie) VALUES (?, ?, ?, ?, ?)';
+        params = [nom, description, prix || null, image_url, categorie];
     } else {
-        sql = 'INSERT INTO produits (nom, description, lien_achat, prix, image_url, categorie) VALUES (?, ?, ?, ?, ?, ?)';
-        params = [nom, description, lien_achat || null, prix || null, image_url, categorie];
+        sql = 'INSERT INTO produits (nom, description, lien_achat, image_url, categorie) VALUES (?, ?, ?, ?, ?)';
+        params = [nom, description, lien_achat || null, image_url, categorie];
     }
 
     db.query(sql, params, (err, result) => {
         if (err) {
-            console.error("Erreur lors de l'ajout du produit:", err);
-            return res.status(500).json({ error: "Erreur serveur" });
+            console.error("Erreur lors de l'ajout du produit :", err);
+            return res.status(500).json({ error: "Erreur serveur : " + err.message });
         }
-        res.json({ message: "Produit ajouté", id: result.insertId });
+        res.json({ message: "Produit ajouté avec succès", id: result.insertId });
     });
 };
 
@@ -56,9 +59,13 @@ exports.updateProduit = (req, res) => {
         return res.status(400).json({ error: "ID invalide." });
     }
 
+    if (prix && (!validator.isFloat(prix.toString()) || prix <= 0)) {
+        return res.status(400).json({ error: "Prix invalide." });
+    }
+
     db.query('SELECT categorie FROM produits WHERE id = ?', [id], (err, results) => {
         if (err || results.length === 0) {
-            console.error('Erreur lors de la récupération du produit:', err);
+            console.error('Erreur lors de la récupération du produit :', err);
             return res.status(500).json({ error: 'Erreur serveur' });
         }
 
@@ -68,17 +75,18 @@ exports.updateProduit = (req, res) => {
         if (categorie === 'conference') {
             sql = 'UPDATE produits SET nom=?, description=?, image_url=?, ordre=? WHERE id=?';
             params = [nom, description, image_url, ordre || 0, id];
-
+        } else if (categorie === 'spray') {
+            sql = 'UPDATE produits SET nom=?, description=?, prix=?, image_url=?, ordre=? WHERE id=?';
+            params = [nom, description, prix || null, image_url, ordre || 0, id];
         } else {
-            sql = 'UPDATE produits SET nom=?, description=?, prix=?, lien_achat=?, image_url=?, ordre=? WHERE id=?';
-            params = [nom, description, prix || null, lien_achat || null, image_url, ordre || 0, id];
-
+            sql = 'UPDATE produits SET nom=?, description=?, lien_achat=?, image_url=?, ordre=? WHERE id=?';
+            params = [nom, description, lien_achat || null, image_url, ordre || 0, id];
         }
 
         db.query(sql, params, (err) => {
             if (err) {
-                console.error('Erreur lors de la modification du produit:', err);
-                return res.status(500).json({ error: 'Erreur serveur' });
+                console.error('Erreur lors de la modification du produit :', err);
+                return res.status(500).json({ error: 'Erreur serveur : ' + err.message });
             }
             res.json({ message: 'Produit mis à jour' });
         });
